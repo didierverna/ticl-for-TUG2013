@@ -7,3 +7,5 @@ doc/reference.pdf
 doc/reference.ps
 doc/reference.texi
 doc/reference/
+
+examples/*.pdf
