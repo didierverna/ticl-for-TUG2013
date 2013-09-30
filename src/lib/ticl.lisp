@@ -88,20 +88,20 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 						:pre-decoration :none
 						:post-decoration :none)
 				  (tt:hbox (:align :center :adjustable-p t)
-				    (tt:with-style (:font *font-normal*)
+				    (tt:with-style (:font tt::*font-normal*)
 				      (tt:put-string outside))
 				    :hfill
-				    (tt:with-style (:font *font-italic*)
+				    (tt:with-style (:font tt::*font-italic*)
 				      (tt:put-string inside)))))
 			      (tt:compile-text ()
 				(tt:with-style (:font-size 10
 						:pre-decoration :none
 						:post-decoration :none)
 				  (tt:hbox (:align :center :adjustable-p t)
-				    (tt:with-style (:font *font-italic*)
+				    (tt:with-style (:font tt::*font-italic*)
 				      (tt:put-string inside))
 				    :hfill
-				    (tt:with-style (:font *font-normal*)
+				    (tt:with-style (:font tt::*font-normal*)
 				      (tt:put-string outside)))))))
 			(tt:compile-text () ""))))
 	  (footer (lambda (pdf:*page*)
@@ -113,7 +113,7 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 						"DocumentEnd"))))
 			  (if (and tt::*twosided* (evenp pdf:*page-number*))
 			      (tt:compile-text ()
-				(tt:with-style (:font *font-normal*
+				(tt:with-style (:font tt::*font-normal*
 						:font-size 10
 						:pre-decoration :none
 						:post-decoration :none)
@@ -122,7 +122,7 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 				    :hfill
 				    (tt:put-string inside))))
 			      (tt:compile-text ()
-				(tt:with-style (:font *font-normal*
+				(tt:with-style (:font tt::*font-normal*
 						:font-size 10
 						:pre-decoration :none
 						:post-decoration :none)
