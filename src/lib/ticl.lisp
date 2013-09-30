@@ -161,7 +161,7 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 	tt::*h-align* :justified
 	;; #### There are other interesting parameters.
 	tt::*verbose* t
-	tt::*paper-size* :a4 ;; :letter by default
+	tt::*paper-size* :letter
 	tt::*page-margins* '(72 72 72 50)
 	tt::*twosided* nil  ;; t by default
 	tt::*toc-depth* 3
