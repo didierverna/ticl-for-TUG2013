@@ -44,9 +44,9 @@
 (defun chapter-markup (level heading &optional content)
   (let* ((ref-id (tt::new-chp-ref level heading))
 	 (cprefix (if tt::*add-chapter-numbers*
-		      (concatenate 'string (tt::chpnum-string (cdr ref-id)) " ")
+		      (concatenate 'string (tt::chpnum-string (cdr ref-id)))
 		      ""))
-	 (numbered-heading (concatenate 'string cprefix heading)))
+	 (numbered-heading (concatenate 'string cprefix " " heading)))
     `(pdf:with-outline-level
 	 (,numbered-heading
 	  (pdf::register-named-reference
@@ -57,6 +57,7 @@
        (tt:paragraph ,(nth level tt::*chapter-styles*)
 	 (tt:mark-ref-point ',ref-id :data ,heading :page-content t)
 	 (tt:put-string ,cprefix)
+	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
 	 ,@(if (null content)
 	       (list heading)
 	       content)))))
