@@ -150,7 +150,7 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 		 tt::*undefined-references*)
 	(format t "Undefined references:~%~S~%"
 		tt::*undefined-references*))
-      (pdf:write-document *output-file*))))
+      (pdf:write-document file))))
 
 ;; Cf. *default-text-style* for font-size and *chapter-styles* for headers.
 
