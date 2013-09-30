@@ -1,0 +1,72 @@
+### Makefile.cnf --- User level configuration
+
+## Copyright (C) 2011 Didier Verna
+
+## Author:     Didier Verna <didier@lrde.epita.fr>
+## Maintainer: Didier Verna <didier@lrde.epita.fr>
+
+## This file is part of TiCL.
+
+## TiCL is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License version 3,
+## as published by the Free Software Foundation.
+
+## TiCL is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+### Commentary:
+
+## Contents management by FCM version 0.1.
+
+
+### Code:
+
+# Installation prefix. This is used for installing TiCL as follows:
+# - $(PREFIX)/share/common-lisp/systems/ for the system file (ASDF 1)
+# - $(PREFIX)/share/doc/ticl/ for the PDF documentation
+# - $(PREFIX)/share/info/ for the info documentation
+# If any of these are unsatisfactory, you will need to edit the Makefiles, or
+# do the installation by hand.
+PREFIX := /usr/local
+
+# C compiler configuration for sb-grovel and cffi-grovel.
+CC := gcc
+
+# Preferred Common Lisp implementation (only SBCL is currently supported).
+LISP := SBCL
+
+# Implementation paths. Note that regardless of the above setting, SBCL is
+# required in order to generate the reference manual, so you must set
+# SBCL_PATH properly. If you don't have SBCL installed at all, set it to
+# nothing.
+SBCL_PATH  := CC=$(CC) sbcl
+CMUCL_PATH := lisp
+CCL_PATH   := ccl
+ECL_PATH   := ecl
+# -q is needed to remove 'bye' for version.cl to work properly.
+CLISP_PATH := CC=$(CC) clisp -q
+
+# For ABCL, we need something slightly different.
+ABCL_JAR   := /usr/local/src/common-lisp/abcl/dist/abcl.jar
+JAVA       := java
+JAVAC      := javac
+JAR        := jar
+SED        := sed
+ABCL_PATH  := abcl
+
+
+# Programs for generating the documentation:
+MAKEINFO = makeinfo
+TEXI2DVI = texi2dvi
+DVIPS    = dvips
+CONVERT  = convert
+
+
+### Makefile.cnf ends here

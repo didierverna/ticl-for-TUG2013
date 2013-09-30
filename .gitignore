@@ -1,0 +1,9 @@
+version.inc
+
+src/dump/ticl
+
+doc/declt.inc
+doc/reference.pdf
+doc/reference.ps
+doc/reference.texi
+doc/reference/
