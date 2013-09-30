@@ -166,6 +166,26 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 	tt::*twosided* nil  ;; t by default
 	tt::*toc-depth* 3
 	cl-pdf::*name-counter* 0)
+  ;; #### FIXME: the before and after skip in LaTeX classes are specified in
+  ;; ex. I use the magic incantation \newlength\x\x=1ex\showthe\x, but this
+  ;; should really be computed automatically. In this case notably, the actual
+  ;; value for 1ex that I use is okay only when *FONT-BOLD* is Times-Bold
+  ;; 10pt.
+  (setq tt::*chapter-styles*
+	(let ((ex 4.60999)
+	      (em 10))
+	  `((:font tt::*font-bold* :font-size 14.4
+	     :top-margin ,(* 3.5 ex) :bottom-margin ,(* 2.3 ex))
+	    (:font tt::*font-bold* :font-size 12
+	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
+	    (:font tt::*font-bold* :font-size 10
+	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
+	    (:font tt::*font-bold* :font-size 10
+	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
+	    (:font tt::*font-bold* :font-size 10
+	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
+	    (:font tt::*font-bold* :font-size 10
+	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em)))))
   (load file)
   ;; #### FIXME: this is for the TOC. Should use TT::FINAL-PASS-P instead.
   (load file))
