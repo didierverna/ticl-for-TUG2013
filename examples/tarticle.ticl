@@ -6,7 +6,7 @@
 (ticl::keywords "This, That")
 (ticl::date "April 01 1970")
 
-(ticl::render-document
+(ticl::document
  `((ticl::maketitle)
    (ticl::section "Lorem Ipsum")
    (tt:paragraph ()

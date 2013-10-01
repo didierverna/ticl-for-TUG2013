@@ -140,7 +140,7 @@
 	  :hfill))))
   (tt:compile-text () ""))
 
-(defun render-document (trees &key (file *output-file*))
+(defun document (trees &key (file *output-file*))
   "Render the document specified by the trees, which is a s-exp containing
 a list of recursive typesetting commands. It gets eval'ed here to typeset it."
   (setq *section-number* '(0 0))
