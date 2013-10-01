@@ -1,8 +1,8 @@
-(setq ticl::*title* "An Article")
-(setq ticl::*author* "Didier Verna")
-(setq ticl::*subject* "About something")
-(setq ticl::*keywords* "This, That")
-(setq ticl::*date* "April 01 1970")
+(ticl::title "An Article")
+(ticl::author "Didier Verna")
+(ticl::subject "About something")
+(ticl::keywords "This, That")
+(ticl::date "April 01 1970")
 
 (ticl::render-document
  `((tt:set-contextual-variable :footer-enabled t)

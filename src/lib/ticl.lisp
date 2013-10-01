@@ -39,6 +39,13 @@
 (defvar *keywords*)
 (defvar *date*)
 
+(defun ticl::title (title) (setq *title* title))
+(defun ticl::author (author) (setq *author* author))
+(defun ticl::subject (subject) (setq *subject* subject))
+(defun ticl::keywords (keywords) (setq *keywords* keywords))
+(defun ticl::date (date) (setq *date* date))
+
+
 ;; Modified from kw-extensions to:
 ;; - not use dotted lines for level-1 headers,
 ;; - use a LaTeX-compliant text and indentation style.
