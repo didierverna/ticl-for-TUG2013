@@ -57,6 +57,32 @@
   `(tt:paragraph ,(nth 0 tt::*chapter-styles*)
      ,title))
 
+;; Modified from kw-extensions to:
+;; - not add a final dot to section numbers.
+(defun chapter-markup (level heading &optional content)
+  (let* ((ref-id (tt::new-chp-ref level heading))
+	 (cprefix (if tt::*add-chapter-numbers*
+		      (concatenate 'string (tt::chpnum-string (cdr ref-id)))
+		      ""))
+	 (numbered-heading (concatenate 'string cprefix " " heading)))
+    `(pdf:with-outline-level
+	 (,numbered-heading
+	  (pdf::register-named-reference
+	   (vector (tt::find-ref-point-page-content ',ref-id) "/Fit")
+	   ,(pdf::gen-name "R")))
+       ,(if (eql level 0) :fresh-page "")
+       ,(if (eql level 0) `(tt:set-contextual-variable :chapter ,heading) "")
+       (tt:paragraph ,(nth level tt::*chapter-styles*)
+	 (tt:mark-ref-point ',ref-id :data ,heading :page-content t)
+	 (tt:put-string ,cprefix)
+	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
+	 ,@(if (null content)
+	       (list heading)
+	       content)))))
+
+(defun section (name) (chapter-markup 0 name))
+(defun subsection (name) (chapter-markup 1 name))
+
 ;; Modified from kw-extensions's make-toc to:
 ;; - output a section header,
 ;; - not use dotted lines for level-1 headers,
@@ -109,29 +135,6 @@ maximum depth *toc-depth*."
 		    (reverse tt::*chapters*)))
     (setf tt::*chapter-nums* nil
 	  tt::*chapters* nil)))
-
-;; Modified from kw-extensions to:
-;; - not add a final dot to section numbers.
-(defun chapter-markup (level heading &optional content)
-  (let* ((ref-id (tt::new-chp-ref level heading))
-	 (cprefix (if tt::*add-chapter-numbers*
-		      (concatenate 'string (tt::chpnum-string (cdr ref-id)))
-		      ""))
-	 (numbered-heading (concatenate 'string cprefix " " heading)))
-    `(pdf:with-outline-level
-	 (,numbered-heading
-	  (pdf::register-named-reference
-	   (vector (tt::find-ref-point-page-content ',ref-id) "/Fit")
-	   ,(pdf::gen-name "R")))
-       ,(if (eql level 0) :fresh-page "")
-       ,(if (eql level 0) `(tt:set-contextual-variable :chapter ,heading) "")
-       (tt:paragraph ,(nth level tt::*chapter-styles*)
-	 (tt:mark-ref-point ',ref-id :data ,heading :page-content t)
-	 (tt:put-string ,cprefix)
-	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
-	 ,@(if (null content)
-	       (list heading)
-	       content)))))
 
 ;; Modified from kw-extensions to:
 ;; - don't use the cl-typesetting package (instead, use prefix),
