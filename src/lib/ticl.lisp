@@ -140,12 +140,6 @@
 	  :hfill))))
   (tt:compile-text () ""))
 
-;; Modified from kw-extensions to:
-;; - don't use the cl-typesetting package (instead, use prefix),
-;; - render to *OUTPUT-FILE* by default,
-;; - remove the TWOSIDED and PAPER-SIZE keys,
-;; - only display the page number in footer, as in LaTeX's plain style,
-;; - fill in PDF meta-data.
 (defun render-document (trees &key (file *output-file*))
   "Render the document specified by the trees, which is a s-exp containing
 a list of recursive typesetting commands. It gets eval'ed here to typeset it."
@@ -159,10 +153,7 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
     (dolist (tree trees)
       (tt:draw-pages
        (eval `(tt:compile-text ()
-		(tt:with-style ,tt::*default-text-style*
-		  (tt:set-style ,(tt:get-contextual-variable :style ()))
-		  (tt:set-contextual-variable :footer-enabled t)
-		  ,tree)))
+		  ,tree))
        :margins tt::*page-margins* ; why isn't that a default ?!
        :footer #'footer))
     (when pdf:*page* (tt:finalize-page pdf:*page*))
@@ -176,7 +167,8 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
   "Run TiCL on FILE."
   (setq *output-file* (merge-pathnames (make-pathname :type "pdf") file)
 	;; #### NOTE: There are other interesting parameters.
-	tt::*default-font* "Times-Roman" tt::*font* tt::*default-font*
+	tt::*default-font* (pdf:get-font "Times-Roman")
+	tt::*font* tt::*default-font*
 	tt::*default-font-size* 10.0 tt::*font-size* tt::*default-font-size*
 	tt::*default-h-align* :justified tt::*h-align* tt::*default-h-align*
 	tt::*default-v-align* :justified tt::*v-align* tt::*default-v-align*
