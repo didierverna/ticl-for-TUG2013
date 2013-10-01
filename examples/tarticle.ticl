@@ -1,3 +1,5 @@
+;;\documentclass[a4paper,12pt]{article}
+
 (ticl::title "An Article")
 (ticl::author "Didier Verna")
 (ticl::subject "About something")
@@ -103,7 +105,3 @@ consectetur blandit. Curabitur ac mi eleifend, tempus tellus eu, dictum
 tortor. Nam eu facilisis ipsum. Ut enim augue, ornare eu ipsum eget, tempus
 hendrerit erat. Nulla non massa eget nunc feugiat suscipit. Fusce eu dolor
 massa. Interdum et malesuada fames ac ante ipsum primis in faucibus.")))
-
-;;\documentclass[a4paper,12pt]{article}
-;;
-;;\maketitle
