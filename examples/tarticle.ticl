@@ -6,8 +6,7 @@
 
 (ticl::render-document
  `((ticl::maketitle)
-   (ticl::section* "Contents")
-   ,@(ticl::make-toc)
+   ,@(ticl::tableofcontents)
    ,(ticl::chapter-markup 0 "Lorem Ipsum")
    (tt:paragraph ()
      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac lectus

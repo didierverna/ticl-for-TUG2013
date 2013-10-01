@@ -57,49 +57,56 @@
   `(tt:paragraph ,(nth 0 tt::*chapter-styles*)
      ,title))
 
-
-;; Modified from kw-extensions to:
+;; Modified from kw-extensions's make-toc to:
+;; - output a section header,
 ;; - not use dotted lines for level-1 headers,
 ;; - use a LaTeX-compliant text and indentation style.
-(defun make-toc ()
+(defun tableofcontents ()
   "Generate table of contents from the information in *chapters*, to
 maximum depth *toc-depth*."
   (prog1
-      (mapcar (let ((1st t))
-		(lambda (chp)
-		  ;; format table of contents entry
-		  (let* ((ref (first chp))
-			 (cnum (cdr ref))
-			 (depth (length cnum))
-			 (title (second chp)))
-		    (prog1
-			(when (<= depth tt::*toc-depth*)
-			  `(tt:paragraph (:h-align :left-but-last
-					  :font
-					  ,(case depth
-					     (1 tt::*font-bold*)
-					     (t tt::*font-normal*))
-					  ;; #### FIXME: these should be
-					  ;; computed based on the current
-					  ;; value of 1em.
-					  :left-margin
-					  ,(case depth
-					     (1 0) (2 15) (3 38) (4 70) (t 100))
-					  :top-margin
-					  ,(if (or 1st (> depth 1)) 0 10))
-			     (tt:put-string ,(tt::chpnum-string cnum))
-			     (tt:hspace ,(case depth
-					  (1 10) (2 12.5)
-					  ;; #### FIXME: these are wrong.
-					  (3 41) (t 50)))
-			     (tt:put-string ,title)
-			     ,(if (= depth 1)
-				  :hfill
-				  '(tt::dotted-hfill))
-			     (tt:with-style (:font-size 10)
-			       (tt::put-ref-point-page-number ',ref))))
-		      (setq 1st nil)))))
-	      (reverse tt::*chapters*))
+      (cons '(ticl::section* "Contents")
+	    (mapcar (let ((1st t))
+		      (lambda (chp)
+			;; format table of contents entry
+			(let* ((ref (first chp))
+			       (cnum (cdr ref))
+			       (depth (length cnum))
+			       (title (second chp)))
+			  (prog1
+			      (when (<= depth tt::*toc-depth*)
+				`(tt:paragraph (:h-align :left-but-last
+						:font
+						,(case depth
+						   (1 tt::*font-bold*)
+						   (t tt::*font-normal*))
+						;; #### FIXME: these should be
+						;; computed based on the
+						;; current value of 1em.
+						:left-margin
+						,(case depth
+						   (1 0)
+						   (2 15)
+						   (3 38)
+						   (4 70)
+						   (t 100))
+						:top-margin
+						,(if (or 1st (> depth 1))
+						     0
+						     10))
+				   (tt:put-string ,(tt::chpnum-string cnum))
+				   (tt:hspace ,(case depth
+						 (1 10) (2 12.5)
+						 ;; #### FIXME: these are wrong.
+						 (3 41) (t 50)))
+				   (tt:put-string ,title)
+				   ,(if (= depth 1)
+					:hfill
+					'(tt::dotted-hfill))
+				   (tt:with-style (:font-size 10)
+				     (tt::put-ref-point-page-number ',ref))))
+			    (setq 1st nil)))))
+		    (reverse tt::*chapters*)))
     (setf tt::*chapter-nums* nil
 	  tt::*chapters* nil)))
 
