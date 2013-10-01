@@ -12,8 +12,16 @@
   \usepackage[pdfauthor={\@author},
               pdftitle={\@title},
               pdfsubject={About Something},
-              pdfkeywords={This, That},
-              colorlinks=true]{hyperref}
+              pdfkeywords={This, That}]{hyperref}
+  \let\hyper@@anchor\@gobble
+  \gdef\hyper@link#1#2#3{#3\Hy@xspace@end}%
+  \def\hyper@anchorstart#1#2{#2\Hy@xspace@end}%
+  \def\hyper@anchorend{\Hy@xspace@end}%
+  \let\hyper@linkstart\@gobbletwo
+  \def\hyper@linkend{\Hy@xspace@end}%
+  \def\hyper@linkurl#1#2{#1\Hy@xspace@end}%
+  \def\hyper@linkfile#1#2#3{#1\Hy@xspace@end}%
+  \def\hyper@link@[#1]#2#3#4{#4\Hy@xspace@end}%
 \makeatother
 
 \begin{document}
