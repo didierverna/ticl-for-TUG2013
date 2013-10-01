@@ -66,6 +66,7 @@
 ;; - don't use the cl-typesetting package (instead, use prefix),
 ;; - render to *OUTPUT-FILE* by default,
 ;; - remove the TWOSIDED and PAPER-SIZE keys,
+;; - only display the page number in footer, as in LaTeX's plain style,
 ;; - fill in PDF meta-data.
 (defun render-document (trees &key (file *output-file*))
   "Render the document specified by the trees, which is a s-exp containing
@@ -107,30 +108,19 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 			(tt:compile-text () ""))))
 	  (footer (lambda (pdf:*page*)
 		    (if (tt:get-contextual-variable :footer-enabled)
-			(let ((inside (tt:get-contextual-variable :version ""))
-			      (outside (format nil "Page ~d of ~d"
+			(let ((pagenum (format nil "~d" ;"Page ~d of ~d"
 					       pdf:*page-number*
 					       (tt:find-ref-point-page-number
 						"DocumentEnd"))))
-			  (if (and tt::*twosided* (evenp pdf:*page-number*))
-			      (tt:compile-text ()
-				(tt:with-style (:font tt::*font-normal*
-						:font-size 10
-						:pre-decoration :none
-						:post-decoration :none)
-				  (tt:hbox (:align :center :adjustable-p t)
-				    (tt:put-string outside)
-				    :hfill
-				    (tt:put-string inside))))
-			      (tt:compile-text ()
-				(tt:with-style (:font tt::*font-normal*
-						:font-size 10
-						:pre-decoration :none
-						:post-decoration :none)
-				  (tt:hbox (:align :center :adjustable-p t)
-				    (tt:put-string inside)
-				    :hfill
-				    (tt:put-string outside))))))
+			  (tt:compile-text ()
+			    (tt:with-style (:font tt::*font-normal*
+					    :font-size 10
+					    :pre-decoration :none
+					    :post-decoration :none)
+			      (tt:hbox (:align :center :adjustable-p t)
+				:hfill
+				(tt:put-string pagenum)
+				:hfill))))
 			(tt:compile-text () "")))))
       (tt:set-contextual-variable :header-enabled nil)
       (tt:set-contextual-variable :footer-enabled nil)
@@ -164,6 +154,7 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 	tt::*verbose* t
 	tt::*paper-size* :letter
 	tt::*page-margins* '(134.26999 125.26999 134.73001 118.72998)
+	tt::*default-page-header-footer-margin* 88.72998
 	tt::*twosided* nil  ;; t by default
 	tt::*toc-depth* 3
 	cl-pdf::*name-counter* 0)
