@@ -182,6 +182,7 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 	 (eval `(tt:compile-text ()
 		  (tt:with-style ,tt::*default-text-style*
 		    (tt:set-style ,(tt:get-contextual-variable :style ()))
+		    (tt:set-contextual-variable :footer-enabled t)
 		    ,tree)))
 	 :margins margins
 	 :header header
