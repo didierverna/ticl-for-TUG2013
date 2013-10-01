@@ -6,6 +6,13 @@
 
 (ticl::render-document
  `((tt:set-contextual-variable :footer-enabled t)
+   (tt:vspace 35)
+   (tt:paragraph (:font-size 17.28 :h-align :center) ticl::*title*)
+   (tt:vspace 15)
+   (tt:paragraph (:font-size 12 :h-align :center :bottom-margin 7)
+     ticl::*author*)
+   (tt:paragraph (:font-size 12 :h-align :center) ticl::*date*)
+   (tt:vspace 15)
    (tt:paragraph ,(nth 0 tt::*chapter-styles*)
      "Contents")
    ,@(ticl::make-toc)
