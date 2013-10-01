@@ -83,59 +83,6 @@
 (defun section (name) (chapter-markup 0 name))
 (defun subsection (name) (chapter-markup 1 name))
 
-;; Modified from kw-extensions's make-toc to:
-;; - output a section header,
-;; - not use dotted lines for level-1 headers,
-;; - use a LaTeX-compliant text and indentation style.
-(defun tableofcontents ()
-  "Generate table of contents from the information in *chapters*, to
-maximum depth *toc-depth*."
-  (prog1
-      (cons '(ticl::section* "Contents")
-	    (mapcar (let ((1st t))
-		      (lambda (chp)
-			;; format table of contents entry
-			(let* ((ref (first chp))
-			       (cnum (cdr ref))
-			       (depth (length cnum))
-			       (title (second chp)))
-			  (prog1
-			      (when (<= depth tt::*toc-depth*)
-				`(tt:paragraph (:h-align :left-but-last
-						:font
-						,(case depth
-						   (1 tt::*font-bold*)
-						   (t tt::*font-normal*))
-						;; #### FIXME: these should be
-						;; computed based on the
-						;; current value of 1em.
-						:left-margin
-						,(case depth
-						   (1 0)
-						   (2 15)
-						   (3 38)
-						   (4 70)
-						   (t 100))
-						:top-margin
-						,(if (or 1st (> depth 1))
-						     0
-						     10))
-				   (tt:put-string ,(tt::chpnum-string cnum))
-				   (tt:hspace ,(case depth
-						 (1 10) (2 12.5)
-						 ;; #### FIXME: these are wrong.
-						 (3 41) (t 50)))
-				   (tt:put-string ,title)
-				   ,(if (= depth 1)
-					:hfill
-					'(tt::dotted-hfill))
-				   (tt:with-style (:font-size 10)
-				     (tt::put-ref-point-page-number ',ref))))
-			    (setq 1st nil)))))
-		    (reverse tt::*chapters*)))
-    (setf tt::*chapter-nums* nil
-	  tt::*chapters* nil)))
-
 ;; Modified from kw-extensions to:
 ;; - don't use the cl-typesetting package (instead, use prefix),
 ;; - render to *OUTPUT-FILE* by default,
@@ -251,8 +198,6 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
 	    (:font tt::*font-bold* :font-size 10
 	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em)))))
-  (load file)
-  ;; #### FIXME: this is for the TOC. Should use TT::FINAL-PASS-P instead.
   (load file))
 
 
