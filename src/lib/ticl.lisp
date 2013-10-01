@@ -140,28 +140,23 @@
 	  :hfill))))
   (tt:compile-text () ""))
 
-(defun document (trees &key (file *output-file*))
-  "Render the document specified by the trees, which is a s-exp containing
-a list of recursive typesetting commands. It gets eval'ed here to typeset it."
-  (setq *section-number* '(0 0))
-  (setq cl-typesetting-hyphen::*left-hyphen-minimum* 999
-	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
-  (tt:with-document (:title *title*
-		     :author *author*
-		     :subject *subject*
-		     :keywords *keywords*)
-    (dolist (tree trees)
-      (tt:draw-pages
-       (eval `(tt:compile-text ()
-		  ,tree))
-       :margins tt::*page-margins* ; why isn't that a default ?!
-       :footer #'footer))
-    (when pdf:*page* (tt:finalize-page pdf:*page*))
-    (when (and (tt::final-pass-p)
-	       tt::*undefined-references*)
-      (format t "Undefined references:~%~S~%"
-	      tt::*undefined-references*))
-    (pdf:write-document file)))
+(defmacro document (&body body)
+  `(progn
+     (setq *section-number* '(0 0))
+     (tt:with-document (:title *title*
+			:author *author*
+			:subject *subject*
+			:keywords *keywords*)
+       (tt:draw-pages
+	(tt:compile-text () ,@body)
+	:margins tt::*page-margins* ; why isn't that a default ?!
+	:footer #'footer)
+       (when pdf:*page* (tt:finalize-page pdf:*page*))
+       (when (and (tt::final-pass-p)
+		  tt::*undefined-references*)
+	 (format t "Undefined references:~%~S~%"
+		 tt::*undefined-references*))
+       (pdf:write-document *output-file*))))
 
 (defun ticl (file)
   "Run TiCL on FILE."
@@ -177,7 +172,9 @@ a list of recursive typesetting commands. It gets eval'ed here to typeset it."
 	tt::*page-margins* '(134.26999 125.26999 134.73001 118.72998)
 	tt::*default-page-header-footer-margin* 88.72998
 	tt::*twosided* nil  ;; t by default
-	cl-pdf::*name-counter* 0) ; this one seems to be a bug.
+	cl-pdf::*name-counter* 0 ; this one seems to be a bug.
+	cl-typesetting-hyphen::*left-hyphen-minimum* 999
+	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
   (load file))
 
 
