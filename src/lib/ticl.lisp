@@ -45,6 +45,14 @@
 (defun ticl::keywords (keywords) (setq *keywords* keywords))
 (defun ticl::date (date) (setq *date* date))
 
+(defun maketitle ()
+  (tt:vspace 35)
+  (tt:paragraph (:font-size 17.28 :h-align :center) *title*)
+  (tt:vspace 15)
+  (tt:paragraph (:font-size 12 :h-align :center :bottom-margin 7) *author*)
+  (tt:paragraph (:font-size 12 :h-align :center) *date*)
+  (tt:vspace 15))
+
 
 ;; Modified from kw-extensions to:
 ;; - not use dotted lines for level-1 headers,
