@@ -32,6 +32,9 @@
 (in-package   :com.dvlsoft.ticl)
 (in-readtable :com.dvlsoft.ticl)
 
+
+;; Document meta-data and title management
+
 (defvar *output-file*)
 (defvar *title*)
 (defvar *author*)
@@ -53,9 +56,52 @@
   (tt:paragraph (:font-size 12 :h-align :center) *date*)
   (tt:vspace 15))
 
-(defmacro section* (title)
-  `(tt:paragraph ,(nth 0 tt::*chapter-styles*)
-     ,title))
+
+;; Sectionning
+
+;; #### FIXME: the before and after skip in LaTeX classes are specified in
+;; ex. I use the magic incantation \newlength\x\x=1ex\showthe\x, but this
+;; should really be computed automatically. In this case notably, the actual
+;; value for 1ex that I use is okay only when the font is Times-Bold 10pt.
+(defvar *section-styles*
+  (let ((ex 4.60999)
+	(em 10))
+    `((:font "Times-Bold" :font-size 14.4
+       :top-margin ,(* 3.5 ex) :bottom-margin ,(* 2.3 ex))
+      (:font "Times-Bold" :font-size 12
+       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
+      (:font "Times-Bold" :font-size 10
+       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
+      (:font "Times-Bold" :font-size 10
+       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
+      (:font "Times-Bold" :font-size 10
+       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
+      (:font "Times-Bold" :font-size 10
+       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em)))))
+
+(defvar *section-number*)
+
+(defun section-number-string (section-number)
+  (format nil "~{~S~^.~}" section-number))
+
+(defmacro %section (level name)
+  `(tt:paragraph ,(nth level *section-styles*)
+     (tt:put-string
+      (section-number-string ',(subseq *section-number* 0 (1+ level))))
+     (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
+     ,name))
+
+(defmacro section (name)
+  `(progn
+     (incf (car *section-number*))
+     (setf (cadr *section-number*) 0)
+     (%section 0 ,name)))
+
+(defmacro subsection (name)
+  `(progn
+     (incf (cadr *section-number*))
+     (%section 1 ,name)))
+
 
 ;; Modified from kw-extensions to:
 ;; - not add a final dot to section numbers.
@@ -80,8 +126,19 @@
 	       (list heading)
 	       content)))))
 
-(defun section (name) (chapter-markup 0 name))
-(defun subsection (name) (chapter-markup 1 name))
+
+(defun footer (pdf:*page*)
+  (let ((pagenum (format nil "~d" pdf:*page-number*)))
+    (tt:compile-text ()
+      (tt:with-style (:font tt::*default-font*
+		      :font-size tt::*default-font-size*
+		      :pre-decoration :none
+		      :post-decoration :none)
+	(tt:hbox (:align :center :adjustable-p t)
+	  :hfill
+	  (tt:put-string pagenum)
+	  :hfill))))
+  (tt:compile-text () ""))
 
 ;; Modified from kw-extensions to:
 ;; - don't use the cl-typesetting package (instead, use prefix),
@@ -92,112 +149,43 @@
 (defun render-document (trees &key (file *output-file*))
   "Render the document specified by the trees, which is a s-exp containing
 a list of recursive typesetting commands. It gets eval'ed here to typeset it."
+  (setq *section-number* '(0 0))
   (setq cl-typesetting-hyphen::*left-hyphen-minimum* 999
 	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
   (tt:with-document (:title *title*
 		     :author *author*
 		     :subject *subject*
 		     :keywords *keywords*)
-    (let ((margins tt::*page-margins*)
-	  (header (lambda (pdf:*page*)
-		    (if (tt:get-contextual-variable :header-enabled)
-			(let ((inside (tt:get-contextual-variable
-				       :title "*Untitled Document*"))
-			      (outside (tt:get-contextual-variable
-					:chapter "*No Chapter*")))
-			  (if (and tt::*twosided* (evenp pdf:*page-number*))
-			      (tt:compile-text ()
-				(tt:with-style (:font-size 10
-						:pre-decoration :none
-						:post-decoration :none)
-				  (tt:hbox (:align :center :adjustable-p t)
-				    (tt:with-style (:font tt::*font-normal*)
-				      (tt:put-string outside))
-				    :hfill
-				    (tt:with-style (:font tt::*font-italic*)
-				      (tt:put-string inside)))))
-			      (tt:compile-text ()
-				(tt:with-style (:font-size 10
-						:pre-decoration :none
-						:post-decoration :none)
-				  (tt:hbox (:align :center :adjustable-p t)
-				    (tt:with-style (:font tt::*font-italic*)
-				      (tt:put-string inside))
-				    :hfill
-				    (tt:with-style (:font tt::*font-normal*)
-				      (tt:put-string outside)))))))
-			(tt:compile-text () ""))))
-	  (footer (lambda (pdf:*page*)
-		    (if (tt:get-contextual-variable :footer-enabled)
-			(let ((pagenum (format nil "~d" ;"Page ~d of ~d"
-					       pdf:*page-number*
-					       (tt:find-ref-point-page-number
-						"DocumentEnd"))))
-			  (tt:compile-text ()
-			    (tt:with-style (:font tt::*font-normal*
-					    :font-size 10
-					    :pre-decoration :none
-					    :post-decoration :none)
-			      (tt:hbox (:align :center :adjustable-p t)
-				:hfill
-				(tt:put-string pagenum)
-				:hfill))))
-			(tt:compile-text () "")))))
-      (tt:set-contextual-variable :header-enabled nil)
-      (tt:set-contextual-variable :footer-enabled nil)
-      (tt::set-contextual-style (:pre-decoration :none))
-      (dolist (tree trees)
-	(tt:draw-pages
-	 (eval `(tt:compile-text ()
-		  (tt:with-style ,tt::*default-text-style*
-		    (tt:set-style ,(tt:get-contextual-variable :style ()))
-		    (tt:set-contextual-variable :footer-enabled t)
-		    ,tree)))
-	 :margins margins
-	 :header header
-	 :footer footer
-	 :size tt::*paper-size*
-	 :finalize-fn #'tt::page-decorations))
-      (when pdf:*page* (tt:finalize-page pdf:*page*))
-      (when (and (tt::final-pass-p)
-		 tt::*undefined-references*)
-	(format t "Undefined references:~%~S~%"
-		tt::*undefined-references*))
-      (pdf:write-document file))))
+    (dolist (tree trees)
+      (tt:draw-pages
+       (eval `(tt:compile-text ()
+		(tt:with-style ,tt::*default-text-style*
+		  (tt:set-style ,(tt:get-contextual-variable :style ()))
+		  (tt:set-contextual-variable :footer-enabled t)
+		  ,tree)))
+       :margins tt::*page-margins* ; why isn't that a default ?!
+       :footer #'footer))
+    (when pdf:*page* (tt:finalize-page pdf:*page*))
+    (when (and (tt::final-pass-p)
+	       tt::*undefined-references*)
+      (format t "Undefined references:~%~S~%"
+	      tt::*undefined-references*))
+    (pdf:write-document file)))
 
 (defun ticl (file)
   "Run TiCL on FILE."
   (setq *output-file* (merge-pathnames (make-pathname :type "pdf") file)
-	tt::*default-h-align* :justified
-	tt::*h-align* :justified
-	;; #### There are other interesting parameters.
-	tt::*verbose* t
+	;; #### NOTE: There are other interesting parameters.
+	tt::*default-font* "Times-Roman" tt::*font* tt::*default-font*
+	tt::*default-font-size* 10.0 tt::*font-size* tt::*default-font-size*
+	tt::*default-h-align* :justified tt::*h-align* tt::*default-h-align*
+	tt::*default-v-align* :justified tt::*v-align* tt::*default-v-align*
 	tt::*paper-size* :letter
+	tt::*default-page-size* :letter
 	tt::*page-margins* '(134.26999 125.26999 134.73001 118.72998)
 	tt::*default-page-header-footer-margin* 88.72998
 	tt::*twosided* nil  ;; t by default
-	tt::*toc-depth* 3
-	cl-pdf::*name-counter* 0)
-  ;; #### FIXME: the before and after skip in LaTeX classes are specified in
-  ;; ex. I use the magic incantation \newlength\x\x=1ex\showthe\x, but this
-  ;; should really be computed automatically. In this case notably, the actual
-  ;; value for 1ex that I use is okay only when *FONT-BOLD* is Times-Bold
-  ;; 10pt.
-  (setq tt::*chapter-styles*
-	(let ((ex 4.60999)
-	      (em 10))
-	  `((:font tt::*font-bold* :font-size 14.4
-	     :top-margin ,(* 3.5 ex) :bottom-margin ,(* 2.3 ex))
-	    (:font tt::*font-bold* :font-size 12
-	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
-	    (:font tt::*font-bold* :font-size 10
-	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
-	    (:font tt::*font-bold* :font-size 10
-	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
-	    (:font tt::*font-bold* :font-size 10
-	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
-	    (:font tt::*font-bold* :font-size 10
-	     :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em)))))
+	cl-pdf::*name-counter* 0) ; this one seems to be a bug.
   (load file))
 
 
