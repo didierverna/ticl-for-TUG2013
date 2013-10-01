@@ -6,8 +6,7 @@
 
 (ticl::render-document
  `((ticl::maketitle)
-   (tt:paragraph ,(nth 0 tt::*chapter-styles*)
-     "Contents")
+   (ticl::section* "Contents")
    ,@(ticl::make-toc)
    ,(ticl::chapter-markup 0 "Lorem Ipsum")
    (tt:paragraph ()

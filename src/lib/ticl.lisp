@@ -53,6 +53,10 @@
   (tt:paragraph (:font-size 12 :h-align :center) *date*)
   (tt:vspace 15))
 
+(defmacro section* (title)
+  `(tt:paragraph ,(nth 0 tt::*chapter-styles*)
+     ,title))
+
 
 ;; Modified from kw-extensions to:
 ;; - not use dotted lines for level-1 headers,
