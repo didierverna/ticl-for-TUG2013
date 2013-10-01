@@ -6,7 +6,9 @@
 
 (ticl::render-document
  `((tt:set-contextual-variable :footer-enabled t)
-   ,@(tt::make-toc)
+   (tt:paragraph ,(nth 0 tt::*chapter-styles*)
+     "Contents")
+   ,@(ticl::make-toc)
    ,(ticl::chapter-markup 0 "Lorem Ipsum")
    (tt:paragraph ()
      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc ac lectus
