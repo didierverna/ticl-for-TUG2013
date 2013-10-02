@@ -57,27 +57,30 @@
   (tt:vspace 15))
 
 
+(defvar *em* 10)
+(defvar *ex* 4.49998)
+(defvar *em-bold* 10)
+(defvar *ex-bold* 4.49998)
+
 ;; Sectionning
 
 ;; #### FIXME: the before and after skip in LaTeX classes are specified in
 ;; ex. I use the magic incantation \newlength\x\x=1ex\showthe\x, but this
 ;; should really be computed automatically. In this case notably, the actual
 ;; value for 1ex that I use is okay only when the font is Times-Bold 10pt.
-(defvar *section-styles*
-  (let ((ex 4.60999)
-	(em 10))
-    `((:font "Times-Bold" :font-size 14.4
-       :top-margin ,(* 3.5 ex) :bottom-margin ,(* 2.3 ex))
-      (:font "Times-Bold" :font-size 12
-       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
-      (:font "Times-Bold" :font-size 10
-       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 ex))
-      (:font "Times-Bold" :font-size 10
-       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
-      (:font "Times-Bold" :font-size 10
-       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em))
-      (:font "Times-Bold" :font-size 10
-       :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em)))))
+(defun section-styles ()
+  `((:font "Times-Bold" :font-size 14.4
+     :top-margin ,(* 3.5 *ex-bold*) :bottom-margin ,(* 2.3 *ex-bold*))
+    (:font "Times-Bold" :font-size 12
+     :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *ex-bold*))
+    (:font "Times-Bold" :font-size 10
+     :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *ex-bold*))
+    (:font "Times-Bold" :font-size 10
+     :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *em-bold*))
+    (:font "Times-Bold" :font-size 10
+     :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *em-bold*))
+    (:font "Times-Bold" :font-size 10
+     :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *em-bold*))))
 
 ;; #### WARNING: there's a bug somewhere which makes the reinitialization of
 ;; this variable inoperative, no matter where I do it. It's a matter of
@@ -96,7 +99,7 @@
 	 (incf (cadr *section-number*)))))
 
 (defmacro %section (level name)
-  `(tt:paragraph ,(nth level *section-styles*)
+  `(tt:paragraph ,(nth level (section-styles))
      (increment-section-number ,level)
      (tt:put-string
       (section-number-string (subseq *section-number* 0 (1+ ,level))))
