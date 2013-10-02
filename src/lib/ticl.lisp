@@ -148,30 +148,9 @@
 (defmacro section (name)
   `(%section 0 ,name))
 
-;; Modified from kw-extensions to:
-;; - not add a final dot to section numbers.
-(defun chapter-markup (level heading &optional content)
-  (let* ((ref-id (tt::new-chp-ref level heading))
-	 (cprefix (if tt::*add-chapter-numbers*
-		      (concatenate 'string (tt::chpnum-string (cdr ref-id)))
-		      ""))
-	 (numbered-heading (concatenate 'string cprefix " " heading)))
-    `(pdf:with-outline-level
-	 (,numbered-heading
-	  (pdf::register-named-reference
-	   (vector (tt::find-ref-point-page-content ',ref-id) "/Fit")
-	   ,(pdf::gen-name "R")))
-       ,(if (eql level 0) :fresh-page "")
-       ,(if (eql level 0) `(tt:set-contextual-variable :chapter ,heading) "")
-       (tt:paragraph ,(nth level tt::*chapter-styles*)
-	 (tt:mark-ref-point ',ref-id :data ,heading :page-content t)
-	 (tt:put-string ,cprefix)
-	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
-	 ,@(if (null content)
-	       (list heading)
-	       content)))))
 
 (defvar *documentclass* :article)
+
 (defun documentclass (class &key (paper :letter) (pt 10))
   (setq *documentclass* class
 	tt::*paper-size* paper tt::*default-page-size* paper
