@@ -42,11 +42,11 @@
 (defvar *keywords*)
 (defvar *date*)
 
-(defun ticl::title (title) (setq *title* title))
-(defun ticl::author (author) (setq *author* author))
-(defun ticl::subject (subject) (setq *subject* subject))
-(defun ticl::keywords (keywords) (setq *keywords* keywords))
-(defun ticl::date (date) (setq *date* date))
+(defun title (title) (setq *title* title))
+(defun author (author) (setq *author* author))
+(defun subject (subject) (setq *subject* subject))
+(defun keywords (keywords) (setq *keywords* keywords))
+(defun date (date) (setq *date* date))
 
 (defun maketitle ()
   (tt:vspace 35)
