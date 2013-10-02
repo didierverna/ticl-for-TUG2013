@@ -72,7 +72,7 @@
 
 (defpackage :com.dvlsoft.ticl.user
   (:documentation "The TiCL user package.")
-  (:use :com.dvlsoft.ticl))
+  (:use :com.dvlsoft.ticl :cl))
 
 (in-package :com.dvlsoft.ticl)
 
