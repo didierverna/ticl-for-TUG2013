@@ -136,8 +136,9 @@
 	       (list heading)
 	       content)))))
 
+(defvar *documentclass* :article)
 (defun documentclass (class &key (paper :letter))
-  (declare (ignore class))
+  (setq *documentclass* class)
   (setq tt::*paper-size* paper tt::*default-page-size* paper))
 
 (defun footer (pdf:*page*)
