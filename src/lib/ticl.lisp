@@ -87,17 +87,17 @@
 ;; should really be computed automatically. In this case notably, the actual
 ;; value for 1ex that I use is okay only when the font is Times-Bold 10pt.
 (defun section-styles ()
-  `((:font "Times-Bold" :font-size 14.4
+  `((:font "Times-Bold" :font-size (|Large|)
      :top-margin ,(* 3.5 *ex-bold*) :bottom-margin ,(* 2.3 *ex-bold*))
-    (:font "Times-Bold" :font-size 12
+    (:font "Times-Bold" :font-size (|large|)
      :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *ex-bold*))
-    (:font "Times-Bold" :font-size 10
+    (:font "Times-Bold" :font-size tt::*default-font-size*
      :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *ex-bold*))
-    (:font "Times-Bold" :font-size 10
+    (:font "Times-Bold" :font-size tt::*default-font-size*
      :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *em-bold*))
-    (:font "Times-Bold" :font-size 10
+    (:font "Times-Bold" :font-size tt::*default-font-size*
      :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *em-bold*))
-    (:font "Times-Bold" :font-size 10
+    (:font "Times-Bold" :font-size tt::*default-font-size*
      :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *em-bold*))))
 
 ;; #### WARNING: there's a bug somewhere which makes the reinitialization of
@@ -159,9 +159,10 @@
 	       content)))))
 
 (defvar *documentclass* :article)
-(defun documentclass (class &key (paper :letter))
-  (setq *documentclass* class)
-  (setq tt::*paper-size* paper tt::*default-page-size* paper))
+(defun documentclass (class &key (paper :letter) (pt 10))
+  (setq *documentclass* class
+	tt::*paper-size* paper tt::*default-page-size* paper
+	tt::*default-font-size* pt tt::*font-size* tt::*default-font-size*))
 
 (defun footer (pdf:*page*)
   (let ((pagenum (format nil "~d" pdf:*page-number*)))
