@@ -183,7 +183,8 @@
 
 	;; Ideally, this should be part of WITH-DOCUMENT:
 	*section-number* '(0 0))
-  (load file))
+  (let ((*package* (find-package :com.dvlsoft.ticl.user)))
+    (load file)))
 
 
 ;;; ticl.lisp ends here

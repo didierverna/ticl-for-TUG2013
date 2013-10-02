@@ -46,6 +46,8 @@
     :+release-status-level+
     :+release-name+
     :version)
+  (:import-from :tt
+   :paragraph)
   (:export
     ;; From com.dvlsoft.ticl.asd:
     :+release-major-level+
@@ -57,8 +59,21 @@
     ;; From package.lisp:
     :nickname-package
     ;; From lib/ticl.lisp:
-    :ticl))
+    :ticl
+    :title
+    :author
+    :subject
+    :keywords
+    :date
+    :document
+    :maketitle
+    :section
+    :subsection
+    :paragraph))
 
+(defpackage :com.dvlsoft.ticl.user
+  (:documentation "The TiCL user package.")
+  (:use :com.dvlsoft.ticl))
 
 (in-package :com.dvlsoft.ticl)
 
