@@ -46,8 +46,6 @@
     :+release-status-level+
     :+release-name+
     :version)
-  (:import-from :tt
-   :paragraph)
   (:export
     ;; From com.dvlsoft.ticl.asd:
     :+release-major-level+

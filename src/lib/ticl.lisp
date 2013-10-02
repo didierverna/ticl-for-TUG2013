@@ -119,12 +119,16 @@
      (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
      ,name))
 
-(defmacro section (name)
-  `(%section 0 ,name))
+(defmacro paragraph (&rest args)
+  (if (stringp (car args))
+      `(tt:paragraph () ,@args)
+      `(tt:paragraph ,@args)))
 
 (defmacro subsection (name)
   `(%section 1 ,name))
 
+(defmacro section (name)
+  `(%section 0 ,name))
 
 ;; Modified from kw-extensions to:
 ;; - not add a final dot to section numbers.
