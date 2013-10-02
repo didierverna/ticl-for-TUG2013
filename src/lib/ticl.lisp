@@ -79,28 +79,35 @@
       (:font "Times-Bold" :font-size 10
        :top-margin ,(* 3.25 ex) :bottom-margin ,(* 1.5 em)))))
 
-(defvar *section-number*)
+;; #### WARNING: there's a bug somewhere which makes the reinitialization of
+;; this variable inoperative, no matter where I do it. It's a matter of
+;; (PRINT (SETQ X 1)) -> != 1 and I have no idea what's going on. Happens with
+;; many Lisp engines as well.
+(defvar *section-number* '(0 0))
 
 (defun section-number-string (section-number)
   (format nil "~{~S~^.~}" section-number))
 
+(defun increment-section-number (level)
+  (cond ((= level 0)
+	 (incf (car *section-number*))
+	 (setf (cadr *section-number*) 0))
+	((= level 1)
+	 (incf (cadr *section-number*)))))
+
 (defmacro %section (level name)
   `(tt:paragraph ,(nth level *section-styles*)
+     (increment-section-number ,level)
      (tt:put-string
-      (section-number-string ',(subseq *section-number* 0 (1+ level))))
+      (section-number-string (subseq *section-number* 0 (1+ ,level))))
      (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
      ,name))
 
 (defmacro section (name)
-  `(progn
-     (incf (car *section-number*))
-     (setf (cadr *section-number*) 0)
-     (%section 0 ,name)))
+  `(%section 0 ,name))
 
 (defmacro subsection (name)
-  `(progn
-     (incf (cadr *section-number*))
-     (%section 1 ,name)))
+  `(%section 1 ,name))
 
 
 ;; Modified from kw-extensions to:
@@ -141,22 +148,20 @@
   (tt:compile-text () ""))
 
 (defmacro document (&body body)
-  `(progn
-     (setq *section-number* '(0 0))
-     (tt:with-document (:title *title*
-			:author *author*
-			:subject *subject*
-			:keywords *keywords*)
-       (tt:draw-pages
-	(tt:compile-text () ,@body)
-	:margins tt::*page-margins* ; why isn't that a default ?!
-	:footer #'footer)
-       (when pdf:*page* (tt:finalize-page pdf:*page*))
-       (when (and (tt::final-pass-p)
-		  tt::*undefined-references*)
-	 (format t "Undefined references:~%~S~%"
-		 tt::*undefined-references*))
-       (pdf:write-document *output-file*))))
+  `(tt:with-document (:title *title*
+		      :author *author*
+		      :subject *subject*
+		      :keywords *keywords*)
+     (tt:draw-pages
+      (tt:compile-text () ,@body)
+      :margins tt::*page-margins* ; why isn't that a default ?!
+      :footer #'footer)
+     (when pdf:*page* (tt:finalize-page pdf:*page*))
+     (when (and (tt::final-pass-p)
+		tt::*undefined-references*)
+       (format t "Undefined references:~%~S~%"
+	       tt::*undefined-references*))
+     (pdf:write-document *output-file*)))
 
 (defun ticl (file)
   "Run TiCL on FILE."
@@ -174,7 +179,10 @@
 	tt::*twosided* nil  ;; t by default
 	cl-pdf::*name-counter* 0 ; this one seems to be a bug.
 	cl-typesetting-hyphen::*left-hyphen-minimum* 999
-	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
+	cl-typesetting-hyphen::*right-hyphen-minimum* 999
+
+	;; Ideally, this should be part of WITH-DOCUMENT:
+	*section-number* '(0 0))
   (load file))
 
 
