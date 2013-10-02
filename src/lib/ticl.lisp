@@ -133,6 +133,9 @@
 	       (list heading)
 	       content)))))
 
+(defun documentclass (class &key (paper :letter))
+  (declare (ignore class))
+  (setq tt::*paper-size* paper tt::*default-page-size* paper))
 
 (defun footer (pdf:*page*)
   (let ((pagenum (format nil "~d" pdf:*page-number*)))
@@ -168,7 +171,7 @@
 	;; #### NOTE: There are other interesting parameters.
 	tt::*default-font* (pdf:get-font "Times-Roman")
 	tt::*font* tt::*default-font*
-	tt::*default-font-size* 10.0 tt::*font-size* tt::*default-font-size*
+	tt::*default-font-size* 10 tt::*font-size* tt::*default-font-size*
 	tt::*default-h-align* :justified tt::*h-align* tt::*default-h-align*
 	tt::*default-v-align* :justified tt::*v-align* tt::*default-v-align*
 	tt::*paper-size* :letter

@@ -60,6 +60,7 @@
     :nickname-package
     ;; From lib/ticl.lisp:
     :ticl
+    :documentclass
     :title
     :author
     :subject
