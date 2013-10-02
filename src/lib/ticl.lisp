@@ -144,8 +144,7 @@
 	(tt:hbox (:align :center :adjustable-p t)
 	  :hfill
 	  (tt:put-string pagenum)
-	  :hfill))))
-  (tt:compile-text () ""))
+	  :hfill)))))
 
 (defmacro document (&body body)
   `(tt:with-document (:title *title*
