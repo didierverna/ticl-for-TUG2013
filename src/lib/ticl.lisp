@@ -112,8 +112,8 @@
 (defun section-number (level)
   (subseq *section-number* 0 (1+ level)))
 
-(defun section-reference (level)
-  (format nil "section ~A" (section-number-string (section-number level))))
+(defun section-reference-string (section-number-string)
+  (format nil "section ~A" section-number-string))
 
 (defun increment-section-number (level)
   (cond ((= level 0)
@@ -123,14 +123,23 @@
 	 (incf (cadr *section-number*)))))
 
 (defmacro %section (level name)
-  `(tt:paragraph ,(nth level (section-styles))
-     (increment-section-number ,level)
-     (let ((ref (section-reference ,level)))
-       (tt:mark-ref-point ref :data ,name :page-content t))
-     (tt:put-string
-      (section-number-string (section-number ,level)))
-     (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
-     ,name))
+  `(let* ((section-number-string
+	    (progn (increment-section-number ,level)
+		   (section-number-string (section-number ,level))))
+	  (section-reference-string
+	    (section-reference-string section-number-string)))
+     (pdf:with-outline-level
+	 ((concatenate 'string section-number-string " " ,name)
+	  (pdf::register-named-reference
+	   (vector
+	    (tt::find-ref-point-page-content (print section-reference-string))
+	    "/Fit")))
+       (tt:paragraph ,(nth level (section-styles))
+	 (tt:mark-ref-point (print section-reference-string) :data ,name
+						     :page-content t)
+	 (tt:put-string section-number-string)
+	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
+	 ,name))))
 
 (defmacro paragraph (&rest args)
   (if (stringp (car args))
