@@ -48,20 +48,12 @@
 (defun keywords (keywords) (setq *keywords* keywords))
 (defun date (date) (setq *date* date))
 
-(defun maketitle ()
-  (tt:vspace 35)
-  (tt:paragraph (:font-size 17.28 :h-align :center) *title*)
-  (tt:vspace 15)
-  (tt:paragraph (:font-size 12 :h-align :center :bottom-margin 7) *author*)
-  (tt:paragraph (:font-size 12 :h-align :center) *date*)
-  (tt:vspace 15))
-
-(defun |LARGE| ()
+(defun large ()
   (cond ((or (= tt::*default-font-size* 10) (= tt::*default-font-size* 11))
 	 17.28)
 	(t 20.74)))
 
-(defun large ()
+(defun |large| ()
   (cond ((or (= tt::*default-font-size* 10) (= tt::*default-font-size* 11))
 	 12)
 	(t 14.4)))
@@ -71,6 +63,17 @@
 (defvar *ex* 4.49998)
 (defvar *em-bold* 10)
 (defvar *ex-bold* 4.49998)
+
+(defun maketitle ()
+  (tt:vspace 35)
+  (tt:paragraph (:font-size (large) :h-align :center)
+    *title*)
+  (tt:vspace 15)
+  (tt:paragraph (:font-size (|large|) :h-align :center :bottom-margin 7)
+    *author*)
+  (tt:paragraph (:font-size (|large|) :h-align :center)
+    *date*)
+  (tt:vspace 15))
 
 ;; Sectionning
 
