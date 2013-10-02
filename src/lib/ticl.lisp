@@ -109,6 +109,12 @@
 (defun section-number-string (section-number)
   (format nil "~{~S~^.~}" section-number))
 
+(defun section-number (level)
+  (subseq *section-number* 0 (1+ level)))
+
+(defun section-reference (level)
+  (format nil "section ~A" (section-number-string (section-number level))))
+
 (defun increment-section-number (level)
   (cond ((= level 0)
 	 (incf (car *section-number*))
@@ -119,8 +125,10 @@
 (defmacro %section (level name)
   `(tt:paragraph ,(nth level (section-styles))
      (increment-section-number ,level)
+     (let ((ref (section-reference ,level)))
+       (tt:mark-ref-point ref :data ,name :page-content t))
      (tt:put-string
-      (section-number-string (subseq *section-number* 0 (1+ ,level))))
+      (section-number-string (section-number ,level)))
      (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
      ,name))
 
