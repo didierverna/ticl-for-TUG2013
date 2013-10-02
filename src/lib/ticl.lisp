@@ -178,11 +178,10 @@
 	tt::*twosided* nil  ;; t by default
 	cl-pdf::*name-counter* 0 ; this one seems to be a bug.
 	cl-typesetting-hyphen::*left-hyphen-minimum* 999
-	cl-typesetting-hyphen::*right-hyphen-minimum* 999
-
+	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
+  (let ((*package* (find-package :com.dvlsoft.ticl.user))
 	;; Ideally, this should be part of WITH-DOCUMENT:
-	*section-number* '(0 0))
-  (let ((*package* (find-package :com.dvlsoft.ticl.user)))
+	(*section-number* '(0 0)))
     (load file)))
 
 
