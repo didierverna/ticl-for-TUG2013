@@ -100,11 +100,7 @@
     (:font "Times-Bold" :font-size tt::*default-font-size*
      :top-margin ,(* 3.25 *ex-bold*) :bottom-margin ,(* 1.5 *em-bold*))))
 
-;; #### WARNING: there's a bug somewhere which makes the reinitialization of
-;; this variable inoperative, no matter where I do it. It's a matter of
-;; (PRINT (SETQ X 1)) -> != 1 and I have no idea what's going on. Happens with
-;; many Lisp engines as well.
-(defvar *section-number* '(0 0))
+(defvar *section-number*)
 
 (defun section-number-string (section-number)
   (format nil "~{~S~^.~}" section-number))
@@ -132,10 +128,10 @@
 	 ((concatenate 'string section-number-string " " ,name)
 	  (pdf::register-named-reference
 	   (vector
-	    (tt::find-ref-point-page-content (print section-reference-string))
+	    (tt::find-ref-point-page-content section-reference-string)
 	    "/Fit")))
        (tt:paragraph ,(nth level (section-styles))
-	 (tt:mark-ref-point (print section-reference-string) :data ,name
+	 (tt:mark-ref-point section-reference-string :data ,name
 						     :page-content t)
 	 (tt:put-string section-number-string)
 	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
@@ -198,6 +194,10 @@
 		      :author *author*
 		      :subject *subject*
 		      :keywords *keywords*)
+     ;; #### WARNING: For some reason that I don't understand, setting
+     ;; *SECTION-NUMBER* to a constant '(0 0) doesn't work. It doesn't get
+     ;; reinitialized.
+     (setq *section-number* (list 0 0))
      (tt:draw-pages
       (tt:compile-text () ,@body)
       :margins tt::*page-margins* ; why isn't that a default ?!
@@ -226,9 +226,7 @@
 	cl-pdf::*name-counter* 0 ; this one seems to be a bug.
 	cl-typesetting-hyphen::*left-hyphen-minimum* 999
 	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
-  (let ((*package* (find-package :com.dvlsoft.ticl.user))
-	;; Ideally, this should be part of WITH-DOCUMENT:
-	(*section-number* '(0 0)))
+  (let ((*package* (find-package :com.dvlsoft.ticl.user)))
     (load file)))
 
 
