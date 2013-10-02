@@ -56,6 +56,16 @@
   (tt:paragraph (:font-size 12 :h-align :center) *date*)
   (tt:vspace 15))
 
+(defun |LARGE| ()
+  (cond ((or (= tt::*default-font-size* 10) (= tt::*default-font-size* 11))
+	 17.28)
+	(t 20.74)))
+
+(defun large ()
+  (cond ((or (= tt::*default-font-size* 10) (= tt::*default-font-size* 11))
+	 12)
+	(t 14.4)))
+
 
 (defvar *em* 10)
 (defvar *ex* 4.49998)
