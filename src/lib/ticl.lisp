@@ -53,6 +53,11 @@
 	 17.28)
 	(t 20.74)))
 
+(defun |Large| ()
+  (cond ((or (= tt::*default-font-size* 10) (= tt::*default-font-size* 11))
+	 14.4)
+	(t 17.28)))
+
 (defun |large| ()
   (cond ((or (= tt::*default-font-size* 10) (= tt::*default-font-size* 11))
 	 12)
