@@ -118,7 +118,7 @@
 	((= level 1)
 	 (incf (cadr *section-number*)))))
 
-(defmacro %section (level name)
+(defmacro %section (level name &body body)
   `(let* ((section-number-string
 	    (progn (increment-section-number ,level)
 		   (section-number-string (section-number ,level))))
@@ -135,18 +135,19 @@
 						     :page-content t)
 	 (tt:put-string section-number-string)
 	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
-	 ,name))))
+	 ,name)
+       ,@body)))
 
 (defmacro paragraph (&rest args)
   (if (stringp (car args))
       `(tt:paragraph () ,@args)
       `(tt:paragraph ,@args)))
 
-(defmacro subsection (name)
-  `(%section 1 ,name))
+(defmacro subsection (name &body body)
+  `(%section 1 ,name ,@body))
 
-(defmacro section (name)
-  `(%section 0 ,name))
+(defmacro section (name &body body)
+  `(%section 0 ,name ,@body))
 
 
 (defvar *documentclass* :article)
