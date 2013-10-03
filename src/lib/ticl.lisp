@@ -132,7 +132,7 @@
 	  (section-reference-string
 	    (section-reference-string section-number-string)))
      (pdf:with-outline-level
-	 ((concatenate 'string section-number-string " " ,name)
+	 (,name
 	  (pdf::register-named-reference
 	   (vector
 	    (tt::find-ref-point-page-content section-reference-string)
