@@ -66,6 +66,8 @@
     :date
     :document
     :maketitle
+    :textbf
+    :textit
     :section
     :subsection
     :paragraph))

@@ -80,6 +80,13 @@
     *date*)
   (tt:vspace 15))
 
+(defmacro textbf (&body body)
+  `(tt:with-style (:font "Times-Bold") ,@body))
+
+(defmacro textit (&body body)
+  `(tt:with-style (:font "Times-Italic") ,@body))
+
+
 ;; Sectionning
 
 ;; #### FIXME: the before and after skip in LaTeX classes are specified in
