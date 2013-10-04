@@ -66,6 +66,7 @@
     :date
     :document
     :maketitle
+    :tableofcontents
     :textbf
     :textit
     :section

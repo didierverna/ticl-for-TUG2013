@@ -10,6 +10,8 @@
 
   (maketitle)
 
+  (tableofcontents)
+
   (section "Lorem Ipsum"
 
     (paragraph "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,

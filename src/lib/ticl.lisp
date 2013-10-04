@@ -36,6 +36,9 @@
 ;; Document meta-data and title management
 
 (defvar *output-file*)
+(defvar *toc-file*)
+(defvar *toc*)
+
 (defvar *title*)
 (defvar *author*)
 (defvar *subject*)
@@ -68,17 +71,6 @@
 (defvar *ex* 4.49998)
 (defvar *em-bold* 10)
 (defvar *ex-bold* 4.49998)
-
-(defun maketitle ()
-  (tt:vspace 35)
-  (tt:paragraph (:font-size (large) :h-align :center)
-    *title*)
-  (tt:vspace 15)
-  (tt:paragraph (:font-size (|large|) :h-align :center :bottom-margin 7)
-    *author*)
-  (tt:paragraph (:font-size (|large|) :h-align :center)
-    *date*)
-  (tt:vspace 15))
 
 (defmacro textbf (&body body)
   `(tt:with-style (:font "Times-Bold") ,@body))
@@ -125,12 +117,43 @@
 	((= level 1)
 	 (incf (cadr *section-number*)))))
 
+(defun toc-line (level section-number-string name section-reference-string)
+  `(tt:paragraph (:h-align :left-but-last
+		  :font ,(case level
+			   (0 tt::*font-bold*)
+			   (t tt::*font-normal*))
+		  ;; #### FIXME: these should be computed based on the current
+		  ;; value of 1em.
+		  :left-margin ,(case level
+				  (0 0)
+				  (1 15)
+				  (2 38)
+				  (3 70)
+				  (t 100))
+		  :top-margin  ,(if (> level 0) 0 10))
+     (tt:put-string ,section-number-string)
+     (tt:hspace ,(case level
+		   (0 10)
+		   (1 12.5)
+		   ;; #### FIXME: these are wrong.
+		   (2 41)
+		   (t 50)))
+     (tt:put-string ,name)
+     ,(if (= level 0)
+	  :hfill
+	  '(tt::dotted-hfill))
+     (tt:with-style (:font-size tt::*default-font-size*)
+       (tt::put-ref-point-page-number ,section-reference-string))))
+
 (defmacro %section (level name &body body)
   `(let* ((section-number-string
 	    (progn (increment-section-number ,level)
 		   (section-number-string (section-number ,level))))
 	  (section-reference-string
 	    (section-reference-string section-number-string)))
+     (push
+      (toc-line ,level section-number-string ,name section-reference-string)
+      *toc*)
      (pdf:with-outline-level
 	 (,name
 	  (pdf::register-named-reference
@@ -156,6 +179,27 @@
 (defmacro section (name &body body)
   `(%section 0 ,name ,@body))
 
+(defmacro tableofcontents ()
+  `(when (probe-file *toc-file*)
+     (tt:paragraph ,(append
+		     ;; Overwrite bottom margin to compensate for the
+		     ;; additional vertical space of level 0 section
+		     ;; headers.
+		     '(:bottom-margin (* .5 *ex-bold*))
+		     (nth 0 (section-styles)))
+       "Contents")
+     (load *toc-file*)))
+
+(defun maketitle ()
+  (tt:vspace 35)
+  (tt:paragraph (:font-size (large) :h-align :center)
+    *title*)
+  (tt:vspace 15)
+  (tt:paragraph (:font-size (|large|) :h-align :center :bottom-margin 7)
+    *author*)
+  (tt:paragraph (:font-size (|large|) :h-align :center)
+    *date*)
+  (tt:vspace 15))
 
 (defvar *documentclass* :article)
 
@@ -184,7 +228,8 @@
      ;; #### WARNING: For some reason that I don't understand, setting
      ;; *SECTION-NUMBER* to a constant '(0 0) doesn't work. It doesn't get
      ;; reinitialized.
-     (setq *section-number* (list 0 0))
+     (setq *section-number* (list 0 0)
+	   *toc* nil)
      (tt:draw-pages
       (tt:compile-text () ,@body)
       :margins tt::*page-margins* ; why isn't that a default ?!
@@ -194,11 +239,17 @@
 		tt::*undefined-references*)
        (format t "Undefined references:~%~S~%"
 	       tt::*undefined-references*))
+     (with-open-file (toc *toc-file* :direction :output
+				     :if-exists :overwrite
+				     :if-does-not-exist :create)
+       (mapc (lambda (toc-line) (format toc "~S~%" toc-line))
+	     (reverse *toc*)))
      (pdf:write-document *output-file*)))
 
 (defun ticl (file)
   "Run TiCL on FILE."
   (setq *output-file* (merge-pathnames (make-pathname :type "pdf") file)
+	*toc-file* (merge-pathnames (make-pathname :type "toc") file)
 	;; #### NOTE: There are other interesting parameters.
 	tt::*default-font* (pdf:get-font "Times-Roman")
 	tt::*font* tt::*default-font*
