@@ -86,11 +86,9 @@
 (document
 
   (maketitle)
-
   (tableofcontents)
 
   (section "Lorem Ipsum"
-
     (paragraph "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
 consectetur adipiscing elit. Nunc ac lectus gravida, bibendum mi id, volutpat
 metus. Phasellus vitae purus ac lorem iaculis ultrices nec ut tortor. Nunc
@@ -100,7 +98,6 @@ metus. Aliquam erat volutpat. Aliquam vel risus nisi. Aliquam aliquam
 dignissim metus, at elementum purus auctor id.")
 
     (subsection "Pellentesque"
-
       (paragraph "Pellentesque ut nunc at tortor dignissim fringilla. Cras
 fringilla in lectus ac hendrerit. Vestibulum egestas erat id nibh imperdiet,
 id aliquam dui fringilla. Morbi non est varius, ornare massa semper, sagittis
@@ -115,7 +112,6 @@ odio. Donec sit amet dolor ultricies, pellentesque tortor sed, lobortis
 felis."))
 
     (subsection "Cras Vulputate"
-
       (paragraph "Cras vulputate tortor ac erat ornare convallis. Sed in dui
 justo. Sed blandit pellentesque nibh tristique tristique. Class aptent taciti
 sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean
@@ -125,7 +121,6 @@ dapibus. Vestibulum porttitor congue est, in bibendum dolor. Integer non
 malesuada libero. Etiam mollis porttitor gravida.")))
 
   (section "Morbi Fringilla"
-
     (paragraph "Morbi fringilla, diam at egestas molestie, nunc nulla
 malesuada nisl, ut imperdiet metus odio non tortor. Duis et ultricies
 ante. Duis eu risus sit amet dolor blandit bibendum. Duis a consectetur
@@ -135,7 +130,6 @@ ultricies mollis massa eget ornare. Proin quis risus purus. Sed eu arcu
 pharetra, pharetra felis id, sollicitudin elit.")
 
     (subsection "Fusce"
-
       (paragraph "Fusce et congue ipsum. Ut ac purus velit. Aenean ut quam et
 mi dictum hendrerit ac sit amet erat. Class aptent taciti sociosqu ad litora
 torquent per conubia nostra, per inceptos himenaeos. Pellentesque mauris
@@ -146,7 +140,6 @@ eget tristique orci malesuada. Nullam ullamcorper dui sit amet auctor
 mattis. Aliquam vulputate ligula in leo tempus facilisis."))
 
     (subsection "Nullam Tempor"
-
       (with-rivers
 	  (paragraph "Nullam tempor tellus at massa molestie, sed laoreet
 augue pretium. Nullam consectetur consectetur imperdiet. Praesent pharetra,
@@ -162,7 +155,6 @@ gravida congue viverra. Integer tortor enim, placerat ac iaculis at, cursus id
 magna. Praesent magna tortor, cursus ut mollis id, lacinia et nisl."))))
 
   (section "Aenean Molestie"
-
     (paragraph "Aenean molestie est ut commodo condimentum. Interdum et
 malesuada fames ac ante ipsum primis in faucibus. Vivamus tempor risus vitae
 congue consequat. Vestibulum in ornare libero, in ullamcorper libero. Integer
@@ -171,7 +163,6 @@ pharetra. Class aptent taciti sociosqu ad litora torquent per conubia nostra,
 per inceptos himenaeos.")
 
   (subsection "Nulla Rutrum"
-
     (paragraph "Nulla rutrum sem in nisl pulvinar, rhoncus facilisis metus
 commodo. Vivamus id ornare nisi. Mauris interdum eros nec orci eleifend, sed
 rhoncus diam molestie. Donec sit amet ante ut sapien euismod
@@ -186,7 +177,6 @@ dolor. Nulla vel placerat lectus. Donec adipiscing cursus lacus, a scelerisque
 mauris venenatis nec."))
 
     (subsection "In Feugiat"
-
       (paragraph "In feugiat volutpat nisi in euismod. Integer nibh nisi,
 condimentum et tortor vitae, adipiscing egestas tellus. Maecenas mattis nisl
 id ante consectetur blandit. Curabitur ac mi eleifend, tempus tellus eu,
