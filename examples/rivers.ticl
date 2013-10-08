@@ -1,12 +1,10 @@
 (documentclass :article :paper :letter :pt 12)
 
-(defclass riverbox (tt::vbox) ())
-
-(defun draw-river (box x y)
+(defun draw-rivers (box x y)
   (declare (ignore x y))
   (pdf:with-saved-state
     (let ((spaces (list)))
-      (tt::map-boxes box 0 0
+      (tt::map-boxes box x y
 		     #'(lambda (box x y)
 			 (when (tt::white-char-box-p box)
 			   (push (list (+ x (* 0.5 (tt::dx box)))
@@ -37,13 +35,47 @@
 			   (pdf:circle x2 y2 (* (tt::dx box) 0.7))
 			   (pdf:fill-and-stroke)))))))
 
-(defmacro with-river (&body body)
-  `(tt:user-drawn-box :dx 340 :dy 110
-		      :stroke-fn (lambda (box x y)
-				   (tt::draw-block (tt:compile-text () ,@body)
-						   x y (tt::dx box) (tt::dy box)
-						   :padding 0
-						   :special-fn #'draw-river))))
+(defclass riversbox (tt::vbox) ())
+
+(defun make-riversbox (content dx dy)
+  (tt:with-text-content (content)
+    (multiple-value-bind (boxes dy-left)
+	(tt::fit-lines content dx dy :top t)
+      (when boxes
+	(let* ((box (make-instance 'riversbox
+				   :dx dx :dy (- dy dy-left)
+				   :boxes boxes
+				   :fixed-size nil)))
+	  (tt::do-layout box)
+	  box)))))
+
+(defmacro with-rivers (&body body)
+  (tt::with-gensyms (box)
+    `(let (,box)
+       (let ((tt::*content* (make-instance 'tt::text-content)))
+	 ,@(mapcar 'tt::insert-stuff body)
+	 ;; #### NOTE: we assume that the river box uses the whole text width
+	 ;; on the page (like a toplevel paragraph). In a 100% correct
+	 ;; solution, we should depend on the current text width instead.
+	 (setf ,box (make-riversbox tt::*content*
+				   (- (nth 1 (assoc tt::*paper-size*
+						    +paper-sizes+))
+				      (nth 0 tt::*page-margins*)
+				      (nth 2 tt::*page-margins*)
+				      ;; need a small offset, don't know why
+				      2)
+				   ;; We use the whole text height by default,
+				   ;; and let FIT-LINES give us the correct
+				   ;; value later in MAKE-RIVERSBOX.
+				   (- (nth 2 (assoc tt::*paper-size*
+						    +paper-sizes+))
+				      (nth 1 tt::*page-margins*)
+				      (nth 3 tt::*page-margins*)))))
+       (tt::add-box ,box))))
+
+(defmethod tt::stroke :before ((box riversbox) x y)
+  (draw-rivers box x y))
+
 
 (title "An Article")
 (author "Didier Verna")
@@ -59,14 +91,13 @@
 
   (section "Lorem Ipsum"
 
-    (with-river
-	(paragraph "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
+    (paragraph "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
 consectetur adipiscing elit. Nunc ac lectus gravida, bibendum mi id, volutpat
 metus. Phasellus vitae purus ac lorem iaculis ultrices nec ut tortor. Nunc
 malesuada rutrum leo. Curabitur et sagittis dui, et commodo ligula. Sed
 iaculis libero nibh, ac suscipit turpis accumsan volutpat. Nunc at sem
 metus. Aliquam erat volutpat. Aliquam vel risus nisi. Aliquam aliquam
-dignissim metus, at elementum purus auctor id."))
+dignissim metus, at elementum purus auctor id.")
 
     (subsection "Pellentesque"
 
@@ -116,10 +147,11 @@ mattis. Aliquam vulputate ligula in leo tempus facilisis."))
 
     (subsection "Nullam Tempor"
 
-      (paragraph "Nullam tempor tellus at massa molestie, sed laoreet augue
-pretium. Nullam consectetur consectetur imperdiet. Praesent pharetra, eros vel
-semper volutpat, velit nunc vestibulum odio, sed elementum dui dolor non
-ipsum. Vestibulum ut nibh tortor. Ut eget dictum dui. Curabitur est dolor,
+      (with-rivers
+	  (paragraph "Nullam tempor tellus at massa molestie, sed laoreet
+augue pretium. Nullam consectetur consectetur imperdiet. Praesent pharetra,
+eros vel semper volutpat, velit nunc vestibulum odio, sed elementum dui dolor
+non ipsum. Vestibulum ut nibh tortor. Ut eget dictum dui. Curabitur est dolor,
 cursus a laoreet congue, lacinia vitae justo. Sed adipiscing sapien vitae odio
 vehicula, et varius orci tempor. Fusce in eros in nisl fermentum congue sed eu
 nisl. Sed dictum aliquet mauris et convallis. Donec metus mauris, bibendum ut
@@ -127,7 +159,7 @@ velit et, faucibus interdum orci. Maecenas nisl risus, eleifend in tempus
 aliquet, tincidunt sit amet ante. Donec auctor lectus ut enim luctus, at
 auctor leo porta. Vivamus malesuada ante pharetra scelerisque commodo. Proin
 gravida congue viverra. Integer tortor enim, placerat ac iaculis at, cursus id
-magna. Praesent magna tortor, cursus ut mollis id, lacinia et nisl.")))
+magna. Praesent magna tortor, cursus ut mollis id, lacinia et nisl."))))
 
   (section "Aenean Molestie"
 

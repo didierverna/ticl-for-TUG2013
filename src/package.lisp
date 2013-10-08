@@ -58,6 +58,7 @@
     :nickname-package
     ;; From lib/ticl.lisp:
     :ticl
+    :+paper-sizes+
     :documentclass
     :title
     :author
