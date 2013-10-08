@@ -1,7 +1,6 @@
-(documentclass :article :paper :letter :pt 12)
+(documentclass article :paper letter :pt 12)
 
 (defun draw-rivers (box x y)
-  (declare (ignore x y))
   (pdf:with-saved-state
     (let ((spaces (list)))
       (tt::map-boxes box x y

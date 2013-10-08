@@ -210,10 +210,14 @@
 
 (defvar *documentclass* :article)
 
-(defun documentclass (class &key (paper :letter) (pt 10))
-  (setq *documentclass* class
-	tt::*paper-size* paper tt::*default-page-size* paper
-	tt::*default-font-size* pt tt::*font-size* tt::*default-font-size*))
+(defmacro documentclass (class &key (paper :letter) (pt 10))
+  (let ((the-class (intern (symbol-name class) :keyword))
+	(the-paper (intern (symbol-name paper) :keyword)))
+    `(setq *documentclass* ,the-class
+	   tt::*paper-size* ,the-paper
+	   tt::*default-page-size* tt::*paper-size*
+	   tt::*default-font-size* ,pt
+	   tt::*font-size* tt::*default-font-size*)))
 
 (defun footer (pdf:*page*)
   (let ((pagenum (format nil "~d" pdf:*page-number*)))

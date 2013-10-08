@@ -1,4 +1,4 @@
-(documentclass :article :paper :letter :pt 12)
+(documentclass article :paper letter :pt 12)
 
 (title "An Article")
 (author "Didier Verna")
