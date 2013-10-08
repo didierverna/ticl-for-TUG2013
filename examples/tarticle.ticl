@@ -12,7 +12,7 @@
   (tableofcontents)
 
   (section "Lorem Ipsum"
-    (paragraph "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
+    (par "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
 consectetur adipiscing elit. Nunc ac lectus gravida, bibendum mi id, volutpat
 metus. Phasellus vitae purus ac lorem iaculis ultrices nec ut tortor. Nunc
 malesuada rutrum leo. Curabitur et sagittis dui, et commodo ligula. Sed
@@ -21,12 +21,13 @@ metus. Aliquam erat volutpat. Aliquam vel risus nisi. Aliquam aliquam
 dignissim metus, at elementum purus auctor id.")
 
     (subsection "Pellentesque"
-      (paragraph "Pellentesque ut nunc at tortor dignissim fringilla. Cras
-fringilla in lectus ac hendrerit. Vestibulum egestas erat id nibh imperdiet,
-id aliquam dui fringilla. Morbi non est varius, ornare massa semper, sagittis
-nisl. Donec vulputate commodo neque ac dictum. Morbi tincidunt est arcu, sed
-interdum ipsum facilisis ac. Donec sagittis orci eu justo laoreet, eu congue
-ligula auctor. Vivamus ipsum mauris, condimentum in odio ut, lobortis ultrices
+      (par "Pellentesque ut nunc at tortor dignissim fringilla. Cras fringilla
+in lectus ac hendrerit. Vestibulum egestas erat id nibh imperdiet, id aliquam
+dui fringilla. Morbi non est varius, ornare massa semper, sagittis nisl. Donec
+vulputate commodo neque ac dictum. Morbi tincidunt est arcu, sed interdum
+ipsum facilisis ac. Donec sagittis orci eu justo laoreet, eu congue ligula
+auctor.")
+       (par "Vivamus ipsum mauris, condimentum in odio ut, lobortis ultrices
 nunc. Etiam eu leo eget lectus scelerisque porttitor sed nec purus. Vivamus
 ornare quis metus et tempor. Suspendisse a libero at velit interdum hendrerit
 quis eu nisl. Sed feugiat ligula vel ultricies rhoncus. Morbi accumsan ante
@@ -35,7 +36,7 @@ odio. Donec sit amet dolor ultricies, pellentesque tortor sed, lobortis
 felis."))
 
     (subsection "Cras Vulputate"
-      (paragraph "Cras vulputate tortor ac erat ornare convallis. Sed in dui
+      (par "Cras vulputate tortor ac erat ornare convallis. Sed in dui
 justo. Sed blandit pellentesque nibh tristique tristique. Class aptent taciti
 sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aenean
 ut felis lacinia mi ultrices euismod. Suspendisse malesuada dapibus urna, at
@@ -44,17 +45,17 @@ dapibus. Vestibulum porttitor congue est, in bibendum dolor. Integer non
 malesuada libero. Etiam mollis porttitor gravida.")))
 
   (section "Morbi Fringilla"
-    (paragraph "Morbi fringilla, diam at egestas molestie, nunc nulla
-malesuada nisl, ut imperdiet metus odio non tortor. Duis et ultricies
-ante. Duis eu risus sit amet dolor blandit bibendum. Duis a consectetur
-ligula. Nam ac cursus eros. Morbi nec accumsan ante. Donec non elementum
-felis. Maecenas semper malesuada odio, in commodo magna gravida quis. Aliquam
-ultricies mollis massa eget ornare. Proin quis risus purus. Sed eu arcu
-pharetra, pharetra felis id, sollicitudin elit.")
+    (par "Morbi fringilla, diam at egestas molestie, nunc nulla malesuada
+nisl, ut imperdiet metus odio non tortor. Duis et ultricies ante. Duis eu
+risus sit amet dolor blandit bibendum. Duis a consectetur ligula. Nam ac
+cursus eros. Morbi nec accumsan ante. Donec non elementum felis. Maecenas
+semper malesuada odio, in commodo magna gravida quis. Aliquam ultricies mollis
+massa eget ornare. Proin quis risus purus. Sed eu arcu pharetra, pharetra
+felis id, sollicitudin elit.")
 
     (subsection "Fusce"
-      (paragraph "Fusce et congue ipsum. Ut ac purus velit. Aenean ut quam et
-mi dictum hendrerit ac sit amet erat. Class aptent taciti sociosqu ad litora
+      (par "Fusce et congue ipsum. Ut ac purus velit. Aenean ut quam et mi
+dictum hendrerit ac sit amet erat. Class aptent taciti sociosqu ad litora
 torquent per conubia nostra, per inceptos himenaeos. Pellentesque mauris
 purus, lacinia sed turpis id, pretium venenatis nunc. Phasellus neque arcu,
 tempor nec vulputate vitae, suscipit et ipsum. Pellentesque consequat feugiat
@@ -63,7 +64,7 @@ eget tristique orci malesuada. Nullam ullamcorper dui sit amet auctor
 mattis. Aliquam vulputate ligula in leo tempus facilisis."))
 
     (subsection "Nullam Tempor"
-      (paragraph "Nullam tempor tellus at massa molestie, sed laoreet augue
+      (par "Nullam tempor tellus at massa molestie, sed laoreet augue
 pretium. Nullam consectetur consectetur imperdiet. Praesent pharetra, eros vel
 semper volutpat, velit nunc vestibulum odio, sed elementum dui dolor non
 ipsum. Vestibulum ut nibh tortor. Ut eget dictum dui. Curabitur est dolor,
@@ -77,15 +78,15 @@ gravida congue viverra. Integer tortor enim, placerat ac iaculis at, cursus id
 magna. Praesent magna tortor, cursus ut mollis id, lacinia et nisl.")))
 
   (section "Aenean Molestie"
-    (paragraph "Aenean molestie est ut commodo condimentum. Interdum et
-malesuada fames ac ante ipsum primis in faucibus. Vivamus tempor risus vitae
-congue consequat. Vestibulum in ornare libero, in ullamcorper libero. Integer
-semper tincidunt dolor vitae cursus. Sed placerat cursus eros vel
-pharetra. Class aptent taciti sociosqu ad litora torquent per conubia nostra,
-per inceptos himenaeos.")
+    (par "Aenean molestie est ut commodo condimentum. Interdum et malesuada
+fames ac ante ipsum primis in faucibus. Vivamus tempor risus vitae congue
+consequat. Vestibulum in ornare libero, in ullamcorper libero. Integer semper
+tincidunt dolor vitae cursus. Sed placerat cursus eros vel pharetra. Class
+aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos
+himenaeos.")
 
   (subsection "Nulla Rutrum"
-    (paragraph "Nulla rutrum sem in nisl pulvinar, rhoncus facilisis metus
+    (par "Nulla rutrum sem in nisl pulvinar, rhoncus facilisis metus
 commodo. Vivamus id ornare nisi. Mauris interdum eros nec orci eleifend, sed
 rhoncus diam molestie. Donec sit amet ante ut sapien euismod
 dignissim. Maecenas velit ante, convallis id turpis ac, mollis vulputate
@@ -99,7 +100,7 @@ dolor. Nulla vel placerat lectus. Donec adipiscing cursus lacus, a scelerisque
 mauris venenatis nec."))
 
     (subsection "In Feugiat"
-      (paragraph "In feugiat volutpat nisi in euismod. Integer nibh nisi,
+      (par "In feugiat volutpat nisi in euismod. Integer nibh nisi,
 condimentum et tortor vitae, adipiscing egestas tellus. Maecenas mattis nisl
 id ante consectetur blandit. Curabitur ac mi eleifend, tempus tellus eu,
 dictum tortor. Nam eu facilisis ipsum. Ut enim augue, ornare eu ipsum eget,

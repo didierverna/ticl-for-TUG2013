@@ -72,7 +72,7 @@
     :textit
     :section
     :subsection
-    :paragraph))
+    :par))
 
 (defpackage :com.dvlsoft.ticl.user
   (:documentation "The TiCL user package.")

@@ -84,6 +84,9 @@
 
 ;; Sectionning
 
+(defvar *parindent* 20)
+(defvar *indent-first-line* *parindent*)
+
 ;; #### FIXME: the before and after skip in LaTeX classes are specified in
 ;; ex. I use the magic incantation \newlength\x\x=1ex\showthe\x, but this
 ;; should really be computed automatically. In this case notably, the actual
@@ -169,12 +172,13 @@
 	 (tt:put-string section-number-string)
 	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
 	 ,name)
+       (setq *indent-first-line* 0)
        ,@body)))
 
-(defmacro paragraph (&rest args)
-  (if (stringp (car args))
-      `(tt:paragraph () ,@args)
-      `(tt:paragraph ,@args)))
+(defmacro par (&body body)
+  `(tt:paragraph (:first-line-indent *indent-first-line*)
+     (setq *indent-first-line* *parindent*)
+     ,@body))
 
 (defmacro subsection (name &body body)
   `(%section 1 ,name ,@body))
