@@ -186,7 +186,7 @@
 (defmacro section (name &body body)
   `(%section 0 ,name ,@body))
 
-(defmacro tableofcontents ()
+(defmacro %tableofcontents ()
   `(when (probe-file *toc-file*)
      (tt:paragraph ,(append
 		     ;; Overwrite bottom margin to compensate for the
@@ -195,9 +195,11 @@
 		     '(:bottom-margin (* .5 *ex-bold*))
 		     (nth 0 (section-styles)))
        "Contents")
-     (load *toc-file*)))
+     (load *toc-file*)
+     ""))
+(define-symbol-macro tableofcontents (%tableofcontents))
 
-(defun maketitle ()
+(defun %maketitle ()
   (tt:vspace 35)
   (tt:paragraph (:font-size (large) :h-align :center)
     *title*)
@@ -206,7 +208,9 @@
     *author*)
   (tt:paragraph (:font-size (|large|) :h-align :center)
     *date*)
-  (tt:vspace 15))
+  (tt:vspace 15)
+  "")
+(define-symbol-macro maketitle (%maketitle))
 
 (defvar *documentclass* :article)
 

@@ -8,8 +8,8 @@
 
 (document
 
-  (maketitle)
-  (tableofcontents)
+  maketitle
+  tableofcontents
 
   (section "Lorem Ipsum"
     (par "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
