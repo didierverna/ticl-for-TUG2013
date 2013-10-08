@@ -45,7 +45,7 @@
 	(let* ((box (make-instance 'riversbox
 				   :dx dx :dy (- dy dy-left)
 				   :boxes boxes
-				   :fixed-size nil)))
+				   :fixed-size t)))
 	  (tt::do-layout box)
 	  box)))))
 
@@ -63,7 +63,7 @@
 				      (nth 0 tt::*page-margins*)
 				      (nth 2 tt::*page-margins*)
 				      ;; need a small offset, don't know why
-				      2)
+				      3)
 				   ;; We use the whole text height by default,
 				   ;; and let FIT-LINES give us the correct
 				   ;; value later in MAKE-RIVERSBOX.
