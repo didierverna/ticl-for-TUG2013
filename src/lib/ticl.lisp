@@ -270,6 +270,20 @@
 	     (reverse *toc*)))
      (pdf:write-document *output-file*)))
 
+(defun %begin (thing)
+  (funcall (intern (concatenate 'string "BEGIN-" (symbol-name thing))
+		   :com.dvlsoft.ticl)))
+(defmacro begin (thing)
+  `(%begin ,(intern (symbol-name thing) :keyword)))
+
+(defun %end (thing)
+  (funcall (intern (concatenate 'string "END-" (symbol-name thing))
+		   :com.dvlsoft.ticl)))
+
+(defmacro end (thing)
+  `(%end ,(intern (symbol-name thing) :keyword)))
+
+
 (defun ticl (file)
   "Run TiCL on FILE."
   (setq *output-file* (merge-pathnames (make-pathname :type "pdf") file)

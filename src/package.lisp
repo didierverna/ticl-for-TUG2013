@@ -79,7 +79,9 @@
     :with-subsection
     :subsection
     :par
-    :with-par))
+    :with-par
+    :begin
+    :end))
 
 (defpackage :com.dvlsoft.ticl.user
   (:documentation "The TiCL user package.")
