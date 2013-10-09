@@ -12,19 +12,19 @@
   tableofcontents
 
   (with-section "Lorem Ipsum"
-    "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
-     consectetur adipiscing elit. Proin tellus sapien, fermentum at malesuada
-      pretium, lobortis at augue. Nulla aliquam placerat bibendum. Donec sed
-      purus vitae ligula rhoncus consequat. Cras lobortis pharetra
-      facilisis. Interdum et malesuada fames ac ante ipsum primis in
-      faucibus. Class aptent taciti sociosqu ad litora torquent per conubia
-      nostra, per inceptos himenaeos. Curabitur blandit ipsum quis eleifend
-      luctus. Ut aliquam risus purus, et malesuada enim tincidunt et. Nulla in
-      euismod diam, sit amet tristique est. Nam hendrerit auctor metus ut
-      ultricies. Suspendisse cursus dui egestas, eleifend tortor a, tincidunt
-      lectus. Proin fermentum in leo id sodales. Aliquam consequat eros arcu,
-      et volutpat augue blandit sed. Proin sit amet rutrum neque. In at orci
-      malesuada, tincidunt odio vel, rhoncus felis." par
+    "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet, consectetur
+     adipiscing elit. Proin tellus sapien, fermentum at malesuada pretium,
+     lobortis at augue. Nulla aliquam placerat bibendum. Donec sed purus vitae
+     ligula rhoncus consequat. Cras lobortis pharetra facilisis. Interdum et
+     malesuada fames ac ante ipsum primis in faucibus. Class aptent taciti
+     sociosqu ad litora torquent per conubia nostra, per inceptos
+     himenaeos. Curabitur blandit ipsum quis eleifend luctus. Ut aliquam risus
+     purus, et malesuada enim tincidunt et. Nulla in euismod diam, sit amet
+     tristique est. Nam hendrerit auctor metus ut ultricies. Suspendisse
+     cursus dui egestas, eleifend tortor a, tincidunt lectus. Proin fermentum
+     in leo id sodales. Aliquam consequat eros arcu, et volutpat augue blandit
+     sed. Proin sit amet rutrum neque. In at orci malesuada, tincidunt odio
+     vel, rhoncus felis." par
     "Phasellus " (textbf "blandit") " " (textit "justo") " vel aliquet
      ultricies. Morbi et mollis tortor. Cras in ligula et libero interdum
      vestibulum. Integer erat massa, porttitor vel arcu eu, ultricies rutrum
@@ -101,16 +101,16 @@
 
     (with-subsection "Suspendisse"
       "Suspendisse " (textbf "volutpat") " " (textit "orci") " et nisl
-	volutpat, non pretium magna faucibus. Quisque sollicitudin tincidunt
-	enim, non pulvinar augue egestas quis. Aliquam lobortis metus in ipsum
-	tempus, tempus vehicula nunc sagittis. Suspendisse interdum nibh sit
-	amet mattis blandit. Maecenas a felis egestas, egestas nunc sit amet,
-	lacinia magna. Proin scelerisque, ipsum ac vulputate bibendum, augue
-	massa laoreet justo, ut consequat urna est quis nisl. Interdum et
-	malesuada fames ac ante ipsum primis in faucibus. Sed leo magna,
-	dapibus in lacus at, aliquet rutrum lacus. In congue tortor ut mi
-	venenatis blandit. Donec sollicitudin massa eget sodales
-	ullamcorper." par
+       volutpat, non pretium magna faucibus. Quisque sollicitudin tincidunt
+       enim, non pulvinar augue egestas quis. Aliquam lobortis metus in ipsum
+       tempus, tempus vehicula nunc sagittis. Suspendisse interdum nibh sit
+       amet mattis blandit. Maecenas a felis egestas, egestas nunc sit amet,
+       lacinia magna. Proin scelerisque, ipsum ac vulputate bibendum, augue
+       massa laoreet justo, ut consequat urna est quis nisl. Interdum et
+       malesuada fames ac ante ipsum primis in faucibus. Sed leo magna,
+       dapibus in lacus at, aliquet rutrum lacus. In congue tortor ut mi
+       venenatis blandit. Donec sollicitudin massa eget sodales ullamcorper."
+       par
       "In " (textbf "sagittis") " " (textit "dapibus") " odio id
        dignissim. Maecenas consectetur non ligula at sollicitudin. Phasellus
        rutrum, leo vel aliquet convallis, arcu sapien cursus ante, ut posuere
