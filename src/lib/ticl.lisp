@@ -152,12 +152,16 @@
        (tt::put-ref-point-page-number ,section-reference-string))))
 
 
-(defun par () (tt::new-line))
+(defun %par () (tt::new-line) "")
+(define-symbol-macro par (%par))
 
 (defmacro with-par (&body body)
   `(progn
+     (unless (zerop *indent-first-line*)
+       (tt::add-box (make-instance 'tt::h-spacing :dx *indent-first-line*)))
+     (setq *indent-first-line* *parindent*)
      ,@(mapcar 'tt::insert-stuff body)
-     (par)))
+     (%par)))
 
 (defmacro %with-section (level name &body body)
   `(let* ((section-number-string
@@ -180,8 +184,6 @@
 	 (tt:put-string section-number-string)
 	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
 	 ,name)
-       (unless (zerop *indent-first-line*)
-	 (tt::add-box (make-instance 'tt::h-spacing :dx *indent-first-line*)))
        (setq *indent-first-line* 0)
        ,@(mapcar 'tt::insert-stuff body))))
 
@@ -255,7 +257,7 @@
      (setq *section-number* (list 0 0)
 	   *toc* nil)
      (tt:draw-pages
-      (tt:compile-text () ,@body)
+      (tt:compile-text () ,@body (par))
       :margins tt::*page-margins* ; why isn't that a default ?!
       :footer #'footer)
      (when pdf:*page* (tt:finalize-page pdf:*page*))
