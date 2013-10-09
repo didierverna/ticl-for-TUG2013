@@ -151,7 +151,15 @@
      (tt:with-style (:font-size tt::*default-font-size*)
        (tt::put-ref-point-page-number ,section-reference-string))))
 
-(defmacro %section (level name &body body)
+
+(defun par () (tt::new-line))
+
+(defmacro with-par (&body body)
+  `(progn
+     ,@(mapcar 'tt::insert-stuff body)
+     (par)))
+
+(defmacro %with-section (level name &body body)
   `(let* ((section-number-string
 	    (progn (increment-section-number ,level)
 		   (section-number-string (section-number ,level))))
@@ -172,21 +180,18 @@
 	 (tt:put-string section-number-string)
 	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
 	 ,name)
+       (unless (zerop *indent-first-line*)
+	 (tt::add-box (make-instance 'tt::h-spacing :dx *indent-first-line*)))
        (setq *indent-first-line* 0)
-       ,@body)))
+       ,@(mapcar 'tt::insert-stuff body))))
 
-(defmacro par (&body body)
-  `(tt:paragraph (:first-line-indent *indent-first-line*)
-     (setq *indent-first-line* *parindent*)
-     ,@body))
-
-(defmacro subsection (name &body body)
+(defmacro with-subsection (name &body body)
   `(%section 1 ,name ,@body))
 
-(defmacro section (name &body body)
+(defmacro with-section (name &body body)
   `(%section 0 ,name ,@body))
 
-(defmacro %tableofcontents ()
+(defmacro table-of-contents ()
   `(when (probe-file *toc-file*)
      (tt:paragraph ,(append
 		     ;; Overwrite bottom margin to compensate for the
@@ -197,9 +202,9 @@
        "Contents")
      (load *toc-file*)
      ""))
-(define-symbol-macro tableofcontents (%tableofcontents))
+(define-symbol-macro tableofcontents (table-of-contents))
 
-(defun %maketitle ()
+(defun make-title ()
   (tt:vspace 35)
   (tt:paragraph (:font-size (large) :h-align :center)
     *title*)
@@ -210,18 +215,22 @@
     *date*)
   (tt:vspace 15)
   "")
-(define-symbol-macro maketitle (%maketitle))
+(define-symbol-macro maketitle (make-title))
 
-(defvar *documentclass* :article)
+(defvar *document-class* :article)
+
+(defun document-class (class &key (paper :letter) (pt 10))
+  (setq *documentclass* class
+	tt::*paper-size* paper
+	tt::*default-page-size* tt::*paper-size*
+	tt::*default-font-size* pt
+	tt::*font-size* tt::*default-font-size*))
 
 (defmacro documentclass (class &key (paper :letter) (pt 10))
   (let ((the-class (intern (symbol-name class) :keyword))
 	(the-paper (intern (symbol-name paper) :keyword)))
-    `(setq *documentclass* ,the-class
-	   tt::*paper-size* ,the-paper
-	   tt::*default-page-size* tt::*paper-size*
-	   tt::*default-font-size* ,pt
-	   tt::*font-size* tt::*default-font-size*)))
+    `(document-class ,the-class :paper ,the-paper :pt ,pt)))
+
 
 (defun footer (pdf:*page*)
   (let ((pagenum (format nil "~d" pdf:*page-number*)))
@@ -235,7 +244,7 @@
 	  (tt:put-string pagenum)
 	  :hfill)))))
 
-(defmacro document (&body body)
+(defmacro with-document (&body body)
   `(tt:with-document (:title *title*
 		      :author *author*
 		      :subject *subject*

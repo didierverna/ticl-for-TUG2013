@@ -59,20 +59,27 @@
     ;; From lib/ticl.lisp:
     :ticl
     :+paper-sizes+
+    :document-class
     :documentclass
     :title
     :author
     :subject
     :keywords
     :date
+    :with-document
     :document
+    :make-title
     :maketitle
+    :table-of-contents
     :tableofcontents
     :textbf
     :textit
+    :with-section
     :section
+    :with-subsection
     :subsection
-    :par))
+    :par
+    :with-par))
 
 (defpackage :com.dvlsoft.ticl.user
   (:documentation "The TiCL user package.")
