@@ -220,7 +220,7 @@
 (defvar *document-class* :article)
 
 (defun document-class (class &key (paper :letter) (pt 10))
-  (setq *documentclass* class
+  (setq *document-class* class
 	tt::*paper-size* paper
 	tt::*default-page-size* tt::*paper-size*
 	tt::*default-font-size* pt
