@@ -151,17 +151,36 @@
      (tt:with-style (:font-size tt::*default-font-size*)
        (tt::put-ref-point-page-number ,section-reference-string))))
 
+;; #### WARNING: this whole paragraph thing is an awful kludge, just here to
+;; exercise the "parindent except section's first ones" feature. In
+;; particular, we must be careful to never use plain strings in our internal
+;; functions (and use tt::put-string directly instead) in order to prevent
+;; unwanted effects on *PARAGRAPH-START*. AAMOF, I'm thinking that I shouldn't
+;; use tt:paragraph at all in here (but maybe only tt:with-style) because it's
+;; too high-level.
+(defvar *paragraph-start* t)
 
-(defun %par () (tt::new-line) "")
-(define-symbol-macro par (%par))
+(defun put-string (string)
+  (when *paragraph-start*
+    (unless (zerop *indent-first-line*)
+      (tt::add-box (make-instance 'tt::h-spacing :dx *indent-first-line*)))
+    (setq *indent-first-line* *parindent*
+	  *paragraph-start* nil))
+  (tt::put-string string))
+
+(defmethod tt::insert-stuff ((obj string))
+  `(put-string ,obj))
+
+(defun par ()
+  (tt::new-line)
+  (setq *paragraph-start* t)
+  "")
+(define-symbol-macro par (par))
 
 (defmacro with-par (&body body)
   `(progn
-     (unless (zerop *indent-first-line*)
-       (tt::add-box (make-instance 'tt::h-spacing :dx *indent-first-line*)))
-     (setq *indent-first-line* *parindent*)
      ,@(mapcar 'tt::insert-stuff body)
-     (%par)))
+     (par)))
 
 (defmacro %with-section (level name &body body)
   `(let* ((section-number-string
@@ -178,14 +197,17 @@
 	   (vector
 	    (tt::find-ref-point-page-content section-reference-string)
 	    "/Fit")))
+       (par)
        (tt:paragraph ,(nth level (section-styles))
 	 (tt:mark-ref-point section-reference-string :data ,name
 						     :page-content t)
 	 (tt:put-string section-number-string)
 	 (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
-	 ,name)
-       (setq *indent-first-line* 0)
-       ,@(mapcar 'tt::insert-stuff body))))
+	 (tt:put-string ,name))
+       (setq *indent-first-line* 0
+	     *paragraph-start* t)
+       ,@(mapcar 'tt::insert-stuff body)
+       (par))))
 
 (defmacro with-subsection (name &body body)
   `(%with-section 1 ,name ,@body))
@@ -201,7 +223,7 @@
 		     ;; headers.
 		     '(:bottom-margin (* .5 *ex-bold*))
 		     (nth 0 (section-styles)))
-       "Contents")
+       (tt::put-string "Contents"))
      (load *toc-file*)
      ""))
 (define-symbol-macro tableofcontents (table-of-contents))
@@ -209,12 +231,12 @@
 (defun make-title ()
   (tt:vspace 35)
   (tt:paragraph (:font-size (large) :h-align :center)
-    *title*)
+    (tt::put-string *title*))
   (tt:vspace 15)
   (tt:paragraph (:font-size (|large|) :h-align :center :bottom-margin 7)
-    *author*)
+    (tt::put-string *author*))
   (tt:paragraph (:font-size (|large|) :h-align :center)
-    *date*)
+    (tt::put-string *date*))
   (tt:vspace 15)
   "")
 (define-symbol-macro maketitle (make-title))
@@ -257,7 +279,7 @@
      (setq *section-number* (list 0 0)
 	   *toc* nil)
      (tt:draw-pages
-      (tt:compile-text () ,@body (par))
+      (tt:compile-text () ,@body)
       :margins tt::*page-margins* ; why isn't that a default ?!
       :footer #'footer)
      (when pdf:*page* (tt:finalize-page pdf:*page*))

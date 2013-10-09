@@ -6,83 +6,6 @@
 (keywords "This, That")
 (date "April 01 1970")
 
-(defun draw-rivers (box x y)
-  (pdf:with-saved-state
-    (let ((spaces (list)))
-      (tt::map-boxes box x y
-		     #'(lambda (box x y)
-			 (when (tt::white-char-box-p box)
-			   (push (list (+ x (* 0.5 (tt::dx box)))
-				       (+ y (* 0.5 (tt::dx box)))
-				       box)
-				 spaces))))
-      (pdf:set-line-width 1)
-      (pdf:set-rgb-stroke 1.0 0 0)
-      (pdf:set-gray-fill 0.8)
-      (loop :for (x y box) in spaces
-	    :for sorted-spaces := (sort (copy-seq spaces)
-					#'(lambda (item1 item2)
-					    (let ((dx1 (- (first item1) x))
-						  (dx2 (- (first item2) x)))
-					      (<= (abs dx1)(abs dx2)))))
-	    :do (loop :repeat 10
-		      :for (x2 y2 box) :in sorted-spaces
-		      :for dy = (abs (- y2 y))
-		      :for dx = (abs (- x2 x))
-		      :do
-			 (when (and (< dx (* 2 (+ (tt::dx box)
-						  (tt::delta-size box))))
-				    (< 0 dy (* 5 (tt::dx box))))
-			   (pdf::move-to x y)
-			   (pdf::line-to x2 y2)
-			   (pdf::stroke)
-			   (pdf:circle x y (* (tt::dx box) 0.7))
-			   (pdf:circle x2 y2 (* (tt::dx box) 0.7))
-			   (pdf:fill-and-stroke)))))))
-
-(defclass riversbox (tt::vbox) ())
-
-(defun make-riversbox (content dx dy)
-  (tt:with-text-content (content)
-    (multiple-value-bind (boxes dy-left)
-	(tt::fit-lines content dx dy :top t)
-      (when boxes
-	(let* ((box (make-instance 'riversbox
-				   :dx dx :dy (- dy dy-left)
-				   :boxes boxes
-				   :fixed-size nil)))
-	  (tt::do-layout box)
-	  box)))))
-
-(defmacro with-rivers (&body body)
-  (tt::with-gensyms (box)
-    `(let (,box)
-       (let ((tt::*content* (make-instance 'tt::text-content)))
-	 ,@(mapcar 'tt::insert-stuff body)
-	 (par)
-	 ;; #### NOTE: we assume that the river box uses the whole text width
-	 ;; on the page (like a toplevel paragraph). In a 100% correct
-	 ;; solution, we should depend on the current text width instead.
-	 (setf ,box (make-riversbox tt::*content*
-				   (- (nth 1 (assoc tt::*paper-size*
-						    +paper-sizes+))
-				      (nth 0 tt::*page-margins*)
-				      (nth 2 tt::*page-margins*)
-				      ;; need a small offset, don't know why
-				      2)
-				   ;; We use the whole text height by default,
-				   ;; and let FIT-LINES give us the correct
-				   ;; value later in MAKE-RIVERSBOX.
-				   (- (nth 2 (assoc tt::*paper-size*
-						    +paper-sizes+))
-				      (nth 1 tt::*page-margins*)
-				      (nth 3 tt::*page-margins*)))))
-       (tt::add-box ,box))))
-
-(defmethod tt::stroke :before ((box riversbox) x y)
-  (draw-rivers box x y))
-
-
 (with-document
 
   maketitle
@@ -91,18 +14,17 @@
   (with-section "Lorem Ipsum"
     "Lorem " (textbf "ipsum") " " (textit "dolor") " sit amet,
      consectetur adipiscing elit. Proin tellus sapien, fermentum at malesuada
-     pretium, lobortis at augue. Nulla aliquam placerat bibendum. Donec sed
-     purus vitae ligula rhoncus consequat. Cras lobortis pharetra
-     facilisis. Interdum et malesuada fames ac ante ipsum primis in
-     faucibus. Class aptent taciti sociosqu ad litora torquent per conubia
-     nostra, per inceptos himenaeos. Curabitur blandit ipsum quis eleifend
-     luctus. Ut aliquam risus purus, et malesuada enim tincidunt et. Nulla in
-     euismod diam, sit amet tristique est. Nam hendrerit auctor metus ut
-     ultricies. Suspendisse cursus dui egestas, eleifend tortor a, tincidunt
-     lectus. Proin fermentum in leo id sodales. Aliquam consequat eros arcu,
-     et volutpat augue blandit sed. Proin sit amet rutrum neque. In at orci
-     malesuada, tincidunt odio vel, rhoncus felis." par
-
+      pretium, lobortis at augue. Nulla aliquam placerat bibendum. Donec sed
+      purus vitae ligula rhoncus consequat. Cras lobortis pharetra
+      facilisis. Interdum et malesuada fames ac ante ipsum primis in
+      faucibus. Class aptent taciti sociosqu ad litora torquent per conubia
+      nostra, per inceptos himenaeos. Curabitur blandit ipsum quis eleifend
+      luctus. Ut aliquam risus purus, et malesuada enim tincidunt et. Nulla in
+      euismod diam, sit amet tristique est. Nam hendrerit auctor metus ut
+      ultricies. Suspendisse cursus dui egestas, eleifend tortor a, tincidunt
+      lectus. Proin fermentum in leo id sodales. Aliquam consequat eros arcu,
+      et volutpat augue blandit sed. Proin sit amet rutrum neque. In at orci
+      malesuada, tincidunt odio vel, rhoncus felis." par
     "Phasellus " (textbf "blandit") " " (textit "justo") " vel aliquet
      ultricies. Morbi et mollis tortor. Cras in ligula et libero interdum
      vestibulum. Integer erat massa, porttitor vel arcu eu, ultricies rutrum
@@ -122,7 +44,6 @@
        quis imperdiet venenatis, massa urna euismod ipsum, nec auctor nisl
        nulla et nisl. Quisque commodo nisl quis tellus egestas, nec blandit
        tortor vulputate. Sed pharetra mollis arcu eu vulputate." par
-
       "Donec " (textbf "molestie") " " (textit "nisi") " et dapibus
        gravida. Proin tempor orci et aliquam posuere. Suspendisse sit amet
        condimentum tortor, eu malesuada metus. Maecenas suscipit, nibh eget
@@ -144,7 +65,6 @@
        nulla luctus ullamcorper. Donec viverra faucibus lorem. Nullam
        consectetur massa ac tellus aliquam pharetra. Donec sit amet vulputate
        ligula. Nulla ac tortor eget dui imperdiet tempus." par
-
       "Vestibulum " (textbf "at") " " (textit "est") " at justo sollicitudin
        vestibulum vitae ut lorem. Duis eget nulla sed ante aliquam
        laoreet. Morbi interdum commodo libero, eu interdum justo hendrerit
@@ -159,40 +79,38 @@
        sapien vel, semper urna. Nam pretium vestibulum ultrices."))
 
   (with-section "Suspendisse"
-    (with-rivers
-      "Suspendisse " (textbf "lacinia") " " (textit "viverra") " enim. Morbi
-       ultrices pulvinar sem eu lobortis. Suspendisse suscipit arcu tellus,
-       pharetra tincidunt ante pellentesque non. Ut risus velit, commodo
-       placerat nisi et, sodales mattis sem. Aliquam erat volutpat. Nam nulla
-       enim, scelerisque nec pulvinar ac, sagittis ac ipsum. Nulla vel odio
-       velit. Vestibulum tempus, ante consectetur porttitor scelerisque, augue
-       ligula accumsan nisi, id facilisis enim orci et libero. Vestibulum
-       iaculis porttitor ultrices. Proin scelerisque, odio quis rhoncus
-       tincidunt, lacus mi accumsan lacus, id laoreet risus orci sit amet
-       lacus. Etiam pretium sem sit amet hendrerit fermentum. Nulla
-       adipiscing, dolor id ornare mollis, nunc ante adipiscing neque, at
-       venenatis mi odio non leo. Quisque tristique urna quis elit rutrum
-       semper. Mauris odio enim, porttitor ac ipsum et, porttitor aliquam
-       massa. Donec neque risus, viverra et felis eget, pharetra placerat
-       odio. Nunc vel tristique felis. Nunc tellus dolor, commodo sed est a,
-       rhoncus ullamcorper nulla. Donec gravida viverra nisi sit amet
-       dapibus. Curabitur hendrerit bibendum est, in vestibulum arcu pharetra
-       eget. Cras quis metus dapibus, porta metus et, interdum
-       risus. Suspendisse non eros non nisi tincidunt fermentum. Mauris
-       dignissim dignissim dolor at placerat.")
+    "Suspendisse " (textbf "lacinia") " " (textit "viverra") " enim. Morbi
+     ultrices pulvinar sem eu lobortis. Suspendisse suscipit arcu tellus,
+     pharetra tincidunt ante pellentesque non. Ut risus velit, commodo
+     placerat nisi et, sodales mattis sem. Aliquam erat volutpat. Nam nulla
+     enim, scelerisque nec pulvinar ac, sagittis ac ipsum. Nulla vel odio
+     velit. Vestibulum tempus, ante consectetur porttitor scelerisque, augue
+     ligula accumsan nisi, id facilisis enim orci et libero. Vestibulum
+     iaculis porttitor ultrices. Proin scelerisque, odio quis rhoncus
+     tincidunt, lacus mi accumsan lacus, id laoreet risus orci sit amet
+     lacus. Etiam pretium sem sit amet hendrerit fermentum. Nulla adipiscing,
+     dolor id ornare mollis, nunc ante adipiscing neque, at venenatis mi odio
+     non leo. Quisque tristique urna quis elit rutrum semper. Mauris odio
+     enim, porttitor ac ipsum et, porttitor aliquam massa. Donec neque risus,
+     viverra et felis eget, pharetra placerat odio. Nunc vel tristique
+     felis. Nunc tellus dolor, commodo sed est a, rhoncus ullamcorper
+     nulla. Donec gravida viverra nisi sit amet dapibus. Curabitur hendrerit
+     bibendum est, in vestibulum arcu pharetra eget. Cras quis metus dapibus,
+     porta metus et, interdum risus. Suspendisse non eros non nisi tincidunt
+     fermentum. Mauris dignissim dignissim dolor at placerat."
 
     (with-subsection "Suspendisse"
       "Suspendisse " (textbf "volutpat") " " (textit "orci") " et nisl
-       volutpat, non pretium magna faucibus. Quisque sollicitudin tincidunt
-       enim, non pulvinar augue egestas quis. Aliquam lobortis metus in ipsum
-       tempus, tempus vehicula nunc sagittis. Suspendisse interdum nibh sit
-       amet mattis blandit. Maecenas a felis egestas, egestas nunc sit amet,
-       lacinia magna. Proin scelerisque, ipsum ac vulputate bibendum, augue
-       massa laoreet justo, ut consequat urna est quis nisl. Interdum et
-       malesuada fames ac ante ipsum primis in faucibus. Sed leo magna,
-       dapibus in lacus at, aliquet rutrum lacus. In congue tortor ut mi
-       venenatis blandit. Donec sollicitudin massa eget sodales ullamcorper."
-      par
+	volutpat, non pretium magna faucibus. Quisque sollicitudin tincidunt
+	enim, non pulvinar augue egestas quis. Aliquam lobortis metus in ipsum
+	tempus, tempus vehicula nunc sagittis. Suspendisse interdum nibh sit
+	amet mattis blandit. Maecenas a felis egestas, egestas nunc sit amet,
+	lacinia magna. Proin scelerisque, ipsum ac vulputate bibendum, augue
+	massa laoreet justo, ut consequat urna est quis nisl. Interdum et
+	malesuada fames ac ante ipsum primis in faucibus. Sed leo magna,
+	dapibus in lacus at, aliquet rutrum lacus. In congue tortor ut mi
+	venenatis blandit. Donec sollicitudin massa eget sodales
+	ullamcorper." par
       "In " (textbf "sagittis") " " (textit "dapibus") " odio id
        dignissim. Maecenas consectetur non ligula at sollicitudin. Phasellus
        rutrum, leo vel aliquet convallis, arcu sapien cursus ante, ut posuere
@@ -207,6 +125,7 @@
        ipsum. Phasellus quis commodo orci. Sed faucibus mattis interdum. Nam
        tempus tempus mi quis aliquam. Curabitur id risus risus. Morbi porta
        hendrerit tellus, ut pellentesque magna gravida in.")
+
     (with-subsection "Proin Voluptat"
       "Proin " (textbf "volutpat") " " (textit "tortor") " lacus, in euismod
        nunc congue et. Nullam ipsum tellus, molestie quis leo luctus,
