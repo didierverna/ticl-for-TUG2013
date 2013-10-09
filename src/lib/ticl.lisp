@@ -186,10 +186,10 @@
        ,@(mapcar 'tt::insert-stuff body))))
 
 (defmacro with-subsection (name &body body)
-  `(%section 1 ,name ,@body))
+  `(%with-section 1 ,name ,@body))
 
 (defmacro with-section (name &body body)
-  `(%section 0 ,name ,@body))
+  `(%with-section 0 ,name ,@body))
 
 (defmacro table-of-contents ()
   `(when (probe-file *toc-file*)
