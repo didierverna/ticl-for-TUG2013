@@ -72,8 +72,8 @@
 (defvar *em-bold* 10)
 (defvar *ex-bold* 4.49998)
 
-(defconstant +paper-sizes+ '((:letter 614.295 794.96999)
-			     (:a4 597.50787 845.04684)))
+(define-constant +paper-sizes+ '((:letter 614.295 794.96999)
+				 (:a4 597.50787 845.04684)))
 
 (defmacro textbf (&body body)
   `(tt:with-style (:font "Times-Bold") ,@body))
