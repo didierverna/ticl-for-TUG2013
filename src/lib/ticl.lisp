@@ -160,17 +160,6 @@
 ;; too high-level.
 (defvar *paragraph-start* t)
 
-(defun put-string (string)
-  (when *paragraph-start*
-    (unless (zerop *indent-first-line*)
-      (tt::add-box (make-instance 'tt::h-spacing :dx *indent-first-line*)))
-    (setq *indent-first-line* *parindent*
-	  *paragraph-start* nil))
-  (tt::put-string string))
-
-(defmethod tt::insert-stuff ((obj string))
-  `(put-string ,obj))
-
 (defun par ()
   (tt::new-line)
   (setq *paragraph-start* t)
@@ -181,6 +170,40 @@
   `(progn
      ,@(mapcar 'tt::insert-stuff body)
      (par)))
+
+(defun put-simple-string (string)
+  (when *paragraph-start*
+    (unless (zerop *indent-first-line*)
+      (tt::add-box (make-instance 'tt::h-spacing :dx *indent-first-line*)))
+    (setq *indent-first-line* *parindent*
+	  *paragraph-start* nil))
+  (tt::put-string string))
+
+(defun put-string (string)
+  (loop :with len := (length string)
+	:and start := 0
+	:and look := 0
+	:and eol1 :and eol2p
+	:until (= start len)
+	:do (setq eol1 (position #\Newline string :start look)
+		  eol2p (and eol1
+			     (< eol1 (1- len))
+			     (eq (elt string (1+ eol1)) #\Newline )))
+	:if (and eol1 eol2p)
+	  :do (progn (put-simple-string (subseq string start eol1))
+		     (par)
+		     (setq start (+ eol1 2)
+			   look start))
+	:else
+	  :if (or (not eol1) (= eol1 (1- len)))
+	    :do (progn (put-simple-string (subseq string start))
+		       (setq start len))
+	:else
+	  :do (setq look (1+ eol1))))
+
+(defmethod tt::insert-stuff ((obj string))
+  `(put-string ,obj))
+
 
 (defmacro %with-section (level name &body body)
   `(let* ((section-number-string
