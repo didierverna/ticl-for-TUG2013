@@ -238,6 +238,53 @@
 (defmacro with-section (name &body body)
   `(%with-section 0 ,name ,@body))
 
+
+(defmacro %section (level name)
+  `(let* ((section-number-string
+	    (progn (increment-section-number ,level)
+		   (section-number-string (section-number ,level))))
+	  (section-reference-string
+	    (section-reference-string section-number-string)))
+     (par)
+     (push
+      (toc-line ,level section-number-string ,name section-reference-string)
+      *toc*)
+     ;; Ouch! We miss an unwind-protect here, from pdf:with-outline-level.
+     (pdf:enter-outline-level
+      ,name
+      (pdf::register-named-reference
+       (vector
+	(tt::find-ref-point-page-content section-reference-string)
+	"/Fit")))
+     (tt:paragraph ,(nth level (section-styles))
+       (tt:mark-ref-point section-reference-string :data ,name
+						   :page-content t)
+       (tt:put-string section-number-string)
+       (tt:hspace 10) ;; #### FIXME: this should be 1em in the current font.
+       (tt:put-string ,name))
+     (setq *indent-first-line* 0
+	   *paragraph-start* t)))
+
+;; #### NOTE: In a real world application, this would be generalized as a
+;; stack of opened sections of different levels.
+(defmacro subsection (name)
+  `(progn
+     (unless (zerop (cadr *section-number*))
+       (par)
+       (pdf:close-outline-level))
+     (%section 1 ,name)))
+
+(defmacro section (name)
+  `(progn
+     (unless (zerop (cadr *section-number*))
+       (par)
+       (pdf:close-outline-level))
+     (unless (zerop (car *section-number*))
+       (par)
+       (pdf:close-outline-level))
+     (%section 0 ,name)))
+
+
 (defmacro table-of-contents ()
   `(when (probe-file *toc-file*)
      (tt:paragraph ,(append
@@ -302,7 +349,14 @@
      (setq *section-number* (list 0 0)
 	   *toc* nil)
      (tt:draw-pages
-      (tt:compile-text () ,@body)
+      (tt:compile-text ()
+	,@body
+	(unless (zerop (cadr *section-number*))
+	  (par)
+	  (pdf:close-outline-level))
+	(unless (zerop (car *section-number*))
+	  (par)
+	  (pdf:close-outline-level)))
       :margins tt::*page-margins* ; why isn't that a default ?!
       :footer #'footer)
      (when pdf:*page* (tt:finalize-page pdf:*page*))
@@ -317,18 +371,14 @@
 	     (reverse *toc*)))
      (pdf:write-document *output-file*)))
 
-(defun %begin (thing)
-  (funcall (intern (concatenate 'string "BEGIN-" (symbol-name thing))
-		   :com.dvlsoft.ticl)))
-(defmacro begin (thing)
-  `(%begin ,(intern (symbol-name thing) :keyword)))
 
-(defun %end (thing)
-  (funcall (intern (concatenate 'string "END-" (symbol-name thing))
-		   :com.dvlsoft.ticl)))
+(defmacro begin (thing)
+  `(,(intern (concatenate 'string "BEGIN-" (symbol-name thing))
+	     :com.dvlsoft.ticl)))
 
 (defmacro end (thing)
-  `(%end ,(intern (symbol-name thing) :keyword)))
+  `(,(intern (concatenate 'string "END-" (symbol-name thing))
+	     :com.dvlsoft.ticl)))
 
 
 (defun ticl (file)
