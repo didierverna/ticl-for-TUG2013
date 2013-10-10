@@ -6,83 +6,6 @@
 (keywords "This, That")
 (date "April 01 1970")
 
-(defun draw-rivers (box x y)
-  (pdf:with-saved-state
-    (let ((spaces (list)))
-      (tt::map-boxes box x y
-		     #'(lambda (box x y)
-			 (when (tt::white-char-box-p box)
-			   (push (list (+ x (* 0.5 (tt::dx box)))
-				       (+ y (* 0.5 (tt::dx box)))
-				       box)
-				 spaces))))
-      (pdf:set-line-width 1)
-      (pdf:set-rgb-stroke 1.0 0 0)
-      (pdf:set-gray-fill 0.8)
-      (loop :for (x y box) in spaces
-	    :for sorted-spaces := (sort (copy-seq spaces)
-					#'(lambda (item1 item2)
-					    (let ((dx1 (- (first item1) x))
-						  (dx2 (- (first item2) x)))
-					      (<= (abs dx1)(abs dx2)))))
-	    :do (loop :repeat 10
-		      :for (x2 y2 box) :in sorted-spaces
-		      :for dy = (abs (- y2 y))
-		      :for dx = (abs (- x2 x))
-		      :do
-			 (when (and (< dx (* 2 (+ (tt::dx box)
-						  (tt::delta-size box))))
-				    (< 0 dy (* 5 (tt::dx box))))
-			   (pdf::move-to x y)
-			   (pdf::line-to x2 y2)
-			   (pdf::stroke)
-			   (pdf:circle x y (* (tt::dx box) 0.7))
-			   (pdf:circle x2 y2 (* (tt::dx box) 0.7))
-			   (pdf:fill-and-stroke)))))))
-
-(defclass riversbox (tt::vbox) ())
-
-(defun make-riversbox (content dx dy)
-  (tt:with-text-content (content)
-    (multiple-value-bind (boxes dy-left)
-	(tt::fit-lines content dx dy :top t)
-      (when boxes
-	(let* ((box (make-instance 'riversbox
-				   :dx dx :dy (- dy dy-left)
-				   :boxes boxes
-				   :fixed-size nil)))
-	  (tt::do-layout box)
-	  box)))))
-
-(defmacro with-rivers (&body body)
-  (tt::with-gensyms (box)
-    `(let (,box)
-       (let ((tt::*content* (make-instance 'tt::text-content)))
-	 ,@(mapcar 'tt::insert-stuff body)
-	 (par)
-	 ;; #### NOTE: we assume that the river box uses the whole text width
-	 ;; on the page (like a toplevel paragraph). In a 100% correct
-	 ;; solution, we should depend on the current text width instead.
-	 (setf ,box (make-riversbox tt::*content*
-				   (- (nth 1 (assoc tt::*paper-size*
-						    +paper-sizes+))
-				      (nth 0 tt::*page-margins*)
-				      (nth 2 tt::*page-margins*)
-				      ;; need a small offset, don't know why
-				      2)
-				   ;; We use the whole text height by default,
-				   ;; and let FIT-LINES give us the correct
-				   ;; value later in MAKE-RIVERSBOX.
-				   (- (nth 2 (assoc tt::*paper-size*
-						    +paper-sizes+))
-				      (nth 1 tt::*page-margins*)
-				      (nth 3 tt::*page-margins*)))))
-       (tt::add-box ,box))))
-
-(defmethod tt::stroke :before ((box riversbox) x y)
-  (draw-rivers box x y))
-
-
 #{document
 
   maketitle
@@ -154,33 +77,30 @@
    nunc, scelerisque nec orci non, pharetra consequat urna. Sed porttitor
    neque ut arcu vulputate viverra. Praesent tempor ante id mauris facilisis
    pulvinar. Nam a gravida magna, sed egestas libero. Fusce eleifend nisi
-   bibendum, cursus sapien vel, semper urna. Nam pretium vestibulum
-   ultrices."
+   bibendum, cursus sapien vel, semper urna. Nam pretium vestibulum ultrices."
 
   (section "Suspendisse")
-    #{rivers
-    "Suspendisse " (textbf "lacinia") " " (textit "viverra") " enim. Morbi
-     ultrices pulvinar sem eu lobortis. Suspendisse suscipit arcu tellus,
-     pharetra tincidunt ante pellentesque non. Ut risus velit, commodo
-     placerat nisi et, sodales mattis sem. Aliquam erat volutpat. Nam nulla
-     enim, scelerisque nec pulvinar ac, sagittis ac ipsum. Nulla vel odio
-     velit. Vestibulum tempus, ante consectetur porttitor scelerisque, augue
-     ligula accumsan nisi, id facilisis enim orci et libero. Vestibulum
-     iaculis porttitor ultrices. Proin scelerisque, odio quis rhoncus
-     tincidunt, lacus mi accumsan lacus, id laoreet risus orci sit amet
-     lacus. Etiam pretium sem sit amet hendrerit fermentum. Nulla adipiscing,
-     dolor id ornare mollis, nunc ante adipiscing neque, at venenatis mi odio
-     non leo. Quisque tristique urna quis elit rutrum semper. Mauris odio
-     enim, porttitor ac ipsum et, porttitor aliquam massa. Donec neque risus,
-     viverra et felis eget, pharetra placerat odio. Nunc vel tristique
-     felis. Nunc tellus dolor, commodo sed est a, rhoncus ullamcorper
-     nulla. Donec gravida viverra nisi sit amet dapibus. Curabitur hendrerit
-     bibendum est, in vestibulum arcu pharetra eget. Cras quis metus dapibus,
-     porta metus et, interdum risus. Suspendisse non eros non nisi tincidunt
-     fermentum. Mauris dignissim dignissim dolor at placerat."
-    #}rivers
+  "Suspendisse " (textbf "lacinia") " " (textit "viverra") " enim. Morbi
+   ultrices pulvinar sem eu lobortis. Suspendisse suscipit arcu tellus,
+   pharetra tincidunt ante pellentesque non. Ut risus velit, commodo placerat
+   nisi et, sodales mattis sem. Aliquam erat volutpat. Nam nulla enim,
+   scelerisque nec pulvinar ac, sagittis ac ipsum. Nulla vel odio
+   velit. Vestibulum tempus, ante consectetur porttitor scelerisque, augue
+   ligula accumsan nisi, id facilisis enim orci et libero. Vestibulum iaculis
+   porttitor ultrices. Proin scelerisque, odio quis rhoncus tincidunt, lacus
+   mi accumsan lacus, id laoreet risus orci sit amet lacus. Etiam pretium sem
+   sit amet hendrerit fermentum. Nulla adipiscing, dolor id ornare mollis,
+   nunc ante adipiscing neque, at venenatis mi odio non leo. Quisque tristique
+   urna quis elit rutrum semper. Mauris odio enim, porttitor ac ipsum et,
+   porttitor aliquam massa. Donec neque risus, viverra et felis eget, pharetra
+   placerat odio. Nunc vel tristique felis. Nunc tellus dolor, commodo sed est
+   a, rhoncus ullamcorper nulla. Donec gravida viverra nisi sit amet
+   dapibus. Curabitur hendrerit bibendum est, in vestibulum arcu pharetra
+   eget. Cras quis metus dapibus, porta metus et, interdum risus. Suspendisse
+   non eros non nisi tincidunt fermentum. Mauris dignissim dignissim dolor at
+   placerat."
 
-  (subsection "Suspendisse")
+   (subsection "Suspendisse")
   "Suspendisse " (textbf "volutpat") " " (textit "orci") " et nisl volutpat,
    non pretium magna faucibus. Quisque sollicitudin tincidunt enim, non
    pulvinar augue egestas quis. Aliquam lobortis metus in ipsum tempus, tempus
@@ -218,12 +138,12 @@
    nulla et, convallis laoreet nisl.
 
    Morbi " (textbf "et") " " (textit "lorem") " ipsum. In placerat
-  sollicitudin euismod. Vivamus ac libero ac velit porta tempor. Nulla quis
-  eros lacus. Morbi convallis metus turpis, vitae congue odio porttitor
-  at. Pellentesque facilisis nec nibh vitae porttitor. Vestibulum nulla leo,
-  viverra id pharetra bibendum, vestibulum id tellus. Phasellus ultricies at
-  mi in imperdiet. In in dictum velit, et gravida metus. Vestibulum iaculis,
-  lorem nec venenatis tempus, urna nisl posuere sapien, ultrices interdum nisi
-  magna non quam."
+   sollicitudin euismod. Vivamus ac libero ac velit porta tempor. Nulla quis
+   eros lacus. Morbi convallis metus turpis, vitae congue odio porttitor
+   at. Pellentesque facilisis nec nibh vitae porttitor. Vestibulum nulla leo,
+   viverra id pharetra bibendum, vestibulum id tellus. Phasellus ultricies at
+   mi in imperdiet. In in dictum velit, et gravida metus. Vestibulum iaculis,
+   lorem nec venenatis tempus, urna nisl posuere sapien, ultrices interdum
+   nisi magna non quam."
 
 #}document

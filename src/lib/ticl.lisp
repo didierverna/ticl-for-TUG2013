@@ -380,6 +380,30 @@
   `(,(intern (concatenate 'string "END-" (symbol-name thing))
 	     :com.dvlsoft.ticl)))
 
+(defvar *ticl-user-readtable* (copy-readtable))
+
+(let ((magick (gensym)))
+  (defun open-environment (stream subchar arg)
+    (declare (ignore subchar arg))
+    (let ((name (read stream)))
+      (cons (intern (concatenate 'string "WITH-" (symbol-name name))
+		    :com.dvlsoft.ticl.user)
+	    (loop :for object := (read stream)
+		  :until (when (and (consp object) (eq (car object) magick))
+			   (unless (eq name (cdr object))
+			     (error "~A environment ended with ~A."
+				    name (cdr object)))
+			   t)
+		  :collect object))))
+  (defun close-environment (stream subchar arg)
+    (declare (ignore subchar arg))
+    (let ((name (read stream)))
+      (cons magick name))))
+
+(set-dispatch-macro-character #\# #\{ #'open-environment
+			      *ticl-user-readtable*)
+(set-dispatch-macro-character #\# #\} #'close-environment
+			      *ticl-user-readtable*)
 
 (defun ticl (file)
   "Run TiCL on FILE."
@@ -399,7 +423,8 @@
 	cl-pdf::*name-counter* 0 ; this one seems to be a bug.
 	cl-typesetting-hyphen::*left-hyphen-minimum* 999
 	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
-  (let ((*package* (find-package :com.dvlsoft.ticl.user)))
+  (let ((*package* (find-package :com.dvlsoft.ticl.user))
+	(*readtable* *ticl-user-readtable*))
     (load file)))
 
 
