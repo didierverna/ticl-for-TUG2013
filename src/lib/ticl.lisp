@@ -410,7 +410,7 @@
   (with-open-file (stream file :direction :input)
     (with-output-to-string (string)
       (let ((*package* (find-package :com.dvlsoft.ticl.user))
-	    (*readtable* *user-readtable*)
+	    (cl:*readtable* *user-readtable*)
 	    (*print-readably* t)
 	    (*print-pretty* nil))
 	(loop :with in-string := nil
