@@ -67,10 +67,10 @@
 	(t 14.4)))
 
 
-(defvar *em* 10)
-(defvar *ex* 4.49998)
-(defvar *em-bold* 10)
-(defvar *ex-bold* 4.49998)
+(defparameter *em* 10)
+(defparameter *ex* 4.49998)
+(defparameter *em-bold* 10)
+(defparameter *ex-bold* 4.49998)
 
 (define-constant +paper-sizes+ '((:letter 614.295 794.96999)
 				 (:a4 597.50787 845.04684)))
@@ -84,8 +84,8 @@
 
 ;; Sectionning
 
-(defvar *parindent* 20)
-(defvar *indent-first-line* *parindent*)
+(defparameter *parindent* 20)
+(defparameter *indent-first-line* *parindent*)
 
 ;; #### FIXME: the before and after skip in LaTeX classes are specified in
 ;; ex. I use the magic incantation \newlength\x\x=1ex\showthe\x, but this
@@ -158,7 +158,7 @@
 ;; unwanted effects on *PARAGRAPH-START*. AAMOF, I'm thinking that I shouldn't
 ;; use tt:paragraph at all in here (but maybe only tt:with-style) because it's
 ;; too high-level.
-(defvar *paragraph-start* t)
+(defparameter *paragraph-start* t)
 
 (defun par ()
   (tt::new-line)
@@ -311,7 +311,7 @@
   "")
 (define-symbol-macro maketitle (make-title))
 
-(defvar *document-class* :article)
+(defparameter *document-class* :article)
 
 (defun document-class (class &key (paper :letter) (pt 10))
   (setq *document-class* class
@@ -380,8 +380,6 @@
   `(,(intern (concatenate 'string "END-" (symbol-name thing))
 	     :com.dvlsoft.ticl)))
 
-(defvar *ticl-user-readtable* (copy-readtable))
-
 (let ((magick (gensym)))
   (defun open-environment (stream subchar arg)
     (declare (ignore subchar arg))
@@ -400,10 +398,46 @@
     (let ((name (read stream)))
       (cons magick name))))
 
-(set-dispatch-macro-character #\# #\{ #'open-environment
-			      *ticl-user-readtable*)
-(set-dispatch-macro-character #\# #\} #'close-environment
-			      *ticl-user-readtable*)
+(defun make-user-readtable ()
+  (let ((readtable (copy-readtable nil)))
+    (set-dispatch-macro-character #\# #\{ #'open-environment readtable)
+    (set-dispatch-macro-character #\# #\} #'close-environment readtable)
+    readtable))
+
+(defparameter *user-readtable* (make-user-readtable))
+
+(defun convert (file)
+  (with-open-file (stream file :direction :input)
+    (with-output-to-string (string)
+      (let ((*package* (find-package :com.dvlsoft.ticl.user))
+	    (*readtable* *user-readtable*)
+	    (*print-readably* t)
+	    (*print-pretty* nil))
+	(loop :with in-string := nil
+	      :for char := (read-char stream nil stream)
+	      :until (eq char stream)
+	      :if (eq char #\\)
+		:do (progn (when in-string
+			     (write-char #\" string)
+			     (setq in-string nil))
+			   (let ((expr (read-preserving-whitespace stream)))
+			     (if (consp expr)
+				 (cond ((eq (car expr)
+					    'com.dvlsoft.ticl.user::begin)
+					(format string "#{~S" (cadr expr)))
+				       ((eq (car expr)
+					    'com.dvlsoft.ticl.user::end)
+					(format string "#}~S" (cadr expr)))
+				       (t
+					(prin1 expr string)))
+				 (prin1 expr string))))
+	      :else
+		:do (progn (unless in-string
+			     (write-char #\" string)
+			     (setq in-string t))
+			   (write-char char string))
+	      :finally (when in-string (write-char #\" string)))
+	string))))
 
 (defun ticl (file)
   "Run TiCL on FILE."
@@ -423,9 +457,12 @@
 	cl-pdf::*name-counter* 0 ; this one seems to be a bug.
 	cl-typesetting-hyphen::*left-hyphen-minimum* 999
 	cl-typesetting-hyphen::*right-hyphen-minimum* 999)
-  (let ((*package* (find-package :com.dvlsoft.ticl.user))
-	(*readtable* *ticl-user-readtable*))
-    (load file)))
+  (let ((stream (if (string= "ltic" (subseq file (- (length file) 4)))
+		    (make-string-input-stream (convert file))
+		    file))
+	(*package* (find-package :com.dvlsoft.ticl.user))
+	(*readtable* *user-readtable*))
+    (load stream)))
 
 
 ;;; ticl.lisp ends here

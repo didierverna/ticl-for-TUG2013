@@ -35,9 +35,6 @@
   (:documentation "The TiCL.")
   (:use :cl)
   (:shadow :*readtable*)
-  ;; #### PORTME.
-  (:import-from #+sbcl :sb-mop
-		:class-slots :slot-definition-name :validate-superclass)
   (:import-from :com.dvlsoft.ticl.asdf
    :define-constant
     :+release-major-level+
