@@ -461,7 +461,7 @@
 		    (make-string-input-stream (convert file))
 		    file))
 	(*package* (find-package :com.dvlsoft.ticl.user))
-	(*readtable* *user-readtable*))
+	(cl:*readtable* *user-readtable*))
     (load stream)))
 
 
