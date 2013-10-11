@@ -422,12 +422,14 @@
 			     (setq in-string nil))
 			   (let ((expr (read-preserving-whitespace stream)))
 			     (if (consp expr)
+				 ;; No need to use reader macros here. Let's
+				 ;; just use the WITH-* macro.
 				 (cond ((eq (car expr)
 					    'com.dvlsoft.ticl.user::begin)
-					(format string "#{~S" (cadr expr)))
+					(format string "(WITH-~S " (cadr expr)))
 				       ((eq (car expr)
 					    'com.dvlsoft.ticl.user::end)
-					(format string "#}~S" (cadr expr)))
+					(write-char #\) string))
 				       (t
 					(prin1 expr string)))
 				 (prin1 expr string))))
