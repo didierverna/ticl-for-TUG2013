@@ -161,8 +161,9 @@
 (defparameter *paragraph-start* t)
 
 (defun par ()
-  (tt::new-line)
-  (setq *paragraph-start* t)
+  (unless *paragraph-start*
+    (tt::new-line)
+    (setq *paragraph-start* t))
   "")
 (define-symbol-macro par (par))
 
