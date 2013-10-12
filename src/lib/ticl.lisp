@@ -270,15 +270,15 @@
 ;; stack of opened sections of different levels.
 (defmacro subsection (name)
   `(progn
+     (par)
      (unless (zerop (cadr *section-number*))
-       (par)
        (pdf:close-outline-level))
      (%section 1 ,name)))
 
 (defmacro section (name)
   `(progn
+     (par)
      (unless (zerop (cadr *section-number*))
-       (par)
        (pdf:close-outline-level))
      (unless (zerop (car *section-number*))
        (par)
