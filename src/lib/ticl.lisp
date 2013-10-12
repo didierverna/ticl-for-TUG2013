@@ -184,16 +184,17 @@
   (loop :with len := (length string)
 	:and start := 0
 	:and look := 0
-	:and eol1 :and eol2p
+	:and eol1 :and eol2
 	:until (= start len)
 	:do (setq eol1 (position #\Newline string :start look)
-		  eol2p (and eol1
-			     (< eol1 (1- len))
-			     (eq (elt string (1+ eol1)) #\Newline )))
-	:if (and eol1 eol2p)
+		  eol2 (and eol1
+			    (< eol1 (1- len))
+			    (eq (elt string (1+ eol1)) #\Newline )
+			    (1+ eol1)))
+	:if (and eol1 eol2)
 	  :do (progn (put-simple-string (subseq string start eol1))
 		     (par)
-		     (setq start (+ eol1 2)
+		     (setq start (1+ eol2)
 			   look start))
 	:else
 	  :if (or (not eol1) (= eol1 (1- len)))
