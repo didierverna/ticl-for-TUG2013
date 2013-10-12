@@ -180,6 +180,15 @@
 	  *paragraph-start* nil))
   (tt::put-string string))
 
+(defun next-blank-eol (string start)
+  (loop :with eol
+	:for idx :from start :upto (1- (length string))
+	:if (eq (elt string idx) #\Newline)
+	  :do (setq eol idx)
+	:else
+	  :do (unless (member (elt string idx) '(#\Tab #\Space))
+		(return eol))))
+
 (defun put-string (string)
   (loop :with len := (length string)
 	:and start := 0
@@ -187,10 +196,8 @@
 	:and eol1 :and eol2
 	:until (= start len)
 	:do (setq eol1 (position #\Newline string :start look)
-		  eol2 (and eol1
-			    (< eol1 (1- len))
-			    (eq (elt string (1+ eol1)) #\Newline )
-			    (1+ eol1)))
+		  eol2 (and eol1 (< eol1 (1- len))
+			    (next-blank-eol string (1+ eol1))))
 	:if (and eol1 eol2)
 	  :do (progn (put-simple-string (subseq string start eol1))
 		     (par)
