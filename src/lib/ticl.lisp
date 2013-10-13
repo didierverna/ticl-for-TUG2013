@@ -416,16 +416,24 @@
   (with-open-file (stream file :direction :input)
     (with-output-to-string (string)
       (let ((*package* (find-package :com.dvlsoft.ticl.user))
-	    (cl:*readtable* *user-readtable*)
+	    (cl:*readtable* (copy-readtable *user-readtable*))
 	    (*print-readably* t)
 	    (*print-pretty* nil))
+	;; #### NOTE: we should select another character for single-escape, or
+	;; use something else than \ in ltic files.
+	(set-syntax-from-char #\\ #\Space)
 	(loop :with in-string := nil
 	      :for char := (read-char stream nil stream)
 	      :until (eq char stream)
 	      :if (eq char #\\)
-		:do (progn (when in-string
-			     (write-char #\" string)
-			     (setq in-string nil))
+		:do (progn (cond (in-string
+				  (write-char #\" string)
+				  (setq in-string nil))
+				 ;; Be sure to separate Lisp expressions by at
+				 ;; least a space, in case it is needed to
+				 ;; syntactically separate them (e.g. a
+				 ;; sequence of symbols).
+				 (t (write-char #\Space string)))
 			   (let ((expr (read-preserving-whitespace stream)))
 			     (if (consp expr)
 				 ;; No need to use reader macros here. Let's
