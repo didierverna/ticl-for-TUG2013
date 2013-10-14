@@ -32,6 +32,16 @@
 (in-package   :com.dvlsoft.ticl)
 (in-readtable :com.dvlsoft.ticl)
 
+;; #### FIXME: CL-TYPESETTING's version of this doesn't build a contextual
+;; action. I think this is a bug.
+(defun pop-contextual-variable (var-id &optional default)
+  (tt::add-contextual-action
+   #'(lambda ()
+       (let ((previous (assoc var-id tt::*contextual-variables*)))
+	 (if (and previous (>= (length previous) 2))
+	     (pop (cdr previous))
+	     default)))))
+
 
 ;; Document meta-data and title management
 
@@ -336,6 +346,7 @@
   "")
 
 (defmethod %make-title ((class (eql :report)))
+  (tt:push-contextual-variable :pagestyle :empty)
   (tt::add-box (tt::make-vfill-glue))
   (tt:vspace 64)
   (tt:paragraph (:font-size (large) :h-align :center)
@@ -349,22 +360,24 @@
     (tt::put-string *date*))
   (tt::add-box (tt::make-vfill-glue))
   (tt:new-page)
+  (pop-contextual-variable :pagestyle)
   "")
 
 (defun make-title () (%make-title *document-class*))
 (define-symbol-macro maketitle (make-title))
 
 (defun footer (pdf:*page*)
-  (let ((pagenum (format nil "~d" pdf:*page-number*)))
-    (tt:compile-text ()
-      (tt:with-style (:font tt::*default-font*
-		      :font-size tt::*default-font-size*
-		      :pre-decoration :none
-		      :post-decoration :none)
-	(tt:hbox (:align :center :adjustable-p t)
-	  :hfill
-	  (tt:put-string pagenum)
-	  :hfill)))))
+  (unless (eq (tt:get-contextual-variable :pagestyle :plain) :empty)
+    (let ((pagenum (format nil "~d" pdf:*page-number*)))
+      (tt:compile-text ()
+	(tt:with-style (:font tt::*default-font*
+			:font-size tt::*default-font-size*
+			:pre-decoration :none
+			:post-decoration :none)
+	  (tt:hbox (:align :center :adjustable-p t)
+	    :hfill
+	    (tt:put-string pagenum)
+	    :hfill))))))
 
 (defmacro with-document (&body body)
   `(tt:with-document (:title *title*
