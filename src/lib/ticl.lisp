@@ -304,19 +304,6 @@
      ""))
 (define-symbol-macro tableofcontents (table-of-contents))
 
-(defun make-title ()
-  (tt:vspace 35)
-  (tt:paragraph (:font-size (large) :h-align :center)
-    (tt::put-string *title*))
-  (tt:vspace 15)
-  (tt:paragraph (:font-size (|large|) :h-align :center :bottom-margin 7)
-    (tt::put-string *author*))
-  (tt:paragraph (:font-size (|large|) :h-align :center)
-    (tt::put-string *date*))
-  (tt:vspace 15)
-  "")
-(define-symbol-macro maketitle (make-title))
-
 (defparameter *document-class* :article)
 
 (defun document-class (class &key (paper :letter) (pt 10))
@@ -331,6 +318,41 @@
 	(the-paper (intern (symbol-name paper) :keyword)))
     `(document-class ,the-class :paper ,the-paper :pt ,pt)))
 
+
+(defgeneric %make-title (class))
+
+(defmethod %make-title ((class (eql :article)))
+  (tt:vspace (* 3 *em*))
+  (tt:paragraph (:font-size (large) :h-align :center)
+    (tt::put-string *title*))
+  (tt:vspace (* 1.5 *em*))
+  (tt:paragraph (:font-size (|large|) :h-align :center
+		 :bottom-margin (* .5 *em*))
+    (tt::put-string *author*))
+  (tt:vspace (* .5 *em*))
+  (tt:paragraph (:font-size (|large|) :h-align :center)
+    (tt::put-string *date*))
+  (tt:vspace (* 1.5 *em*))
+  "")
+
+(defmethod %make-title ((class (eql :report)))
+  (tt::add-box (tt::make-vfill-glue))
+  (tt:vspace 64)
+  (tt:paragraph (:font-size (large) :h-align :center)
+    (tt::put-string *title*))
+  (tt:vspace (* 3 *em*))
+  (tt:paragraph (:font-size (|large|) :h-align :center
+		 :bottom-margin (* .75 *em*))
+    (tt::put-string *author*))
+  (tt:vspace (* 1.5 *em*))
+  (tt:paragraph (:font-size (|large|) :h-align :center)
+    (tt::put-string *date*))
+  (tt::add-box (tt::make-vfill-glue))
+  (tt:new-page)
+  "")
+
+(defun make-title () (%make-title *document-class*))
+(define-symbol-macro maketitle (make-title))
 
 (defun footer (pdf:*page*)
   (let ((pagenum (format nil "~d" pdf:*page-number*)))
