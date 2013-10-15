@@ -1,10 +1,10 @@
 (document-class :article :paper :letter :pt 12)
 
-(title "An Article")
-(author "Didier Verna")
-(subject "About something")
-(keywords "This, That")
-(date "April 01 1970")
+(setq ticl::*title* "An Article")        ; or (setf (title) "An Article")
+(setq ticl::*author* "Didier Verna")     ; or (setf (author) "Didier Verna")
+(setq ticl::*subject* "About something") ; or (setf (subject) "About something")
+(setq ticl::*keywords* "This, That")     ; or (setf (keywords) "This, That")
+(setq ticl::*date* "April 01 1970")      ; or (setf (date) "April 01 1970")
 
 (with-document
 
