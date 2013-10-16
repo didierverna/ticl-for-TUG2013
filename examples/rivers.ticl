@@ -83,7 +83,7 @@
   (draw-rivers box x y))
 
 
-#{document
+{begin document}
 
   maketitle
   tableofcontents
@@ -158,7 +158,7 @@
    ultrices."
 
   (section "Suspendisse")
-    #{rivers
+  {begin rivers}
     "Suspendisse " (textbf "lacinia") " " (textit "viverra") " enim. Morbi
      ultrices pulvinar sem eu lobortis. Suspendisse suscipit arcu tellus,
      pharetra tincidunt ante pellentesque non. Ut risus velit, commodo
@@ -178,7 +178,7 @@
      bibendum est, in vestibulum arcu pharetra eget. Cras quis metus dapibus,
      porta metus et, interdum risus. Suspendisse non eros non nisi tincidunt
      fermentum. Mauris dignissim dignissim dolor at placerat."
-    #}rivers
+   {end rivers}
 
   (subsection "Suspendisse")
   "Suspendisse " (textbf "volutpat") " " (textit "orci") " et nisl volutpat,
@@ -226,4 +226,4 @@
   lorem nec venenatis tempus, urna nisl posuere sapien, ultrices interdum nisi
   magna non quam."
 
-#}document
+{end document}
