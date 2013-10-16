@@ -6,7 +6,7 @@
 (keywords "This, That")
 (date "April 01 1970")
 
-#{document
+{begin document}
 
   maketitle
   tableofcontents
@@ -146,4 +146,4 @@
    lorem nec venenatis tempus, urna nisl posuere sapien, ultrices interdum
    nisi magna non quam."
 
-#}document
+{end document}
