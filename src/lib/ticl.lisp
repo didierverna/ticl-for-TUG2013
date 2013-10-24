@@ -426,11 +426,15 @@
     (cons (intern (concatenate 'string "WITH-" (symbol-name env-name))
 		  :com.dvlsoft.ticl.user)
 	  (loop :for object := (read stream)
-		:until (when (and (consp object) (eq (car object) magick))
-			 (unless (eq env-name (cdr object))
-			   (error "~A environment ended with ~A."
-				  env-name (cdr object)))
-			 t)
+		:until (and (consp object)
+			    (eq (car object) magick)
+			    (or (eq env-name (cdr object))
+				(restart-case
+				    (error "~A environment ended with ~A."
+					   env-name (cdr object))
+				  (fix ()
+				    :report "Fix the environment's name."
+				    t))))
 		:collect object)))
   (defun close-environment (env-name)
     (cons magick env-name)))
@@ -475,14 +479,18 @@
 				 (t (write-char #\Space string)))
 			   (let ((expr (read-preserving-whitespace stream)))
 			     (if (consp expr)
-				 ;; No need to use reader macros here. Let's
-				 ;; just use the WITH-* macro.
+				 ;; #### NOTE: We could translate the special
+				 ;; environment syntax directly to the
+				 ;; corresponding WITH- macro, but then we
+				 ;; would have to duplicate the proper nesting
+				 ;; checks here. So instead, we translate to
+				 ;; the {} reader syntax.
 				 (cond ((eq (car expr)
 					    'com.dvlsoft.ticl.user::begin)
-					(format string "(WITH-~S " (cadr expr)))
+					(format string "{BEGIN ~S}" (cadr expr)))
 				       ((eq (car expr)
 					    'com.dvlsoft.ticl.user::end)
-					(write-char #\) string))
+					(format string "{END ~S}" (cadr expr)))
 				       (t
 					(prin1 expr string)))
 				 (prin1 expr string))))
